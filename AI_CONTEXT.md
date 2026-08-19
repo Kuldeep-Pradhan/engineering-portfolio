@@ -9,7 +9,7 @@ This file is intended for any AI coding assistant or agent working on this repos
 
 ## STRICT Brand & Content Guidelines
 - **Name Usage:** ALWAYS use the full name "KULDEEP PRADHAN". NEVER use initials like "KP" or any brand prefix like "KP · KULDEEP PRADHAN".
-- **Banking Partners:** When referencing banking partners in case studies, NEVER mention "IPPB". ONLY use "NSDL", along with "Kotak" and "CSC".
+- **Banking Partners:** You may freely use "IPPB" alongside other banking partners like "NSDL", "Kotak", and "CSC" in case studies and documentation.
 - **Hero Section:** Do not include a personal photo. Do not include "Telemetry Widget" or "Live Telemetry console" buttons. Do not include "2.5k TPS Ready" badges.
 - **Contact:** The Contact section includes a `mailto:` powered form. Keep it lightweight without requiring backend servers.
 
@@ -17,6 +17,7 @@ This file is intended for any AI coding assistant or agent working on this repos
 - **Theme:** Obsidian Gold & Dark Luxe theme. Backgrounds are very dark (e.g., `#08090C`, `#0E1015`) with subtle gold accents (`#E8B54D`) and glassmorphism panels.
 - **Typography:** The project uses the **Inter** font for a clean, enterprise-level look, paired with `JetBrains Mono` for technical badges and metadata.
 - **Scrolling:** The site uses **Lenis** for cinematic smooth scrolling. Do NOT add `scroll-smooth` to the HTML tag, as native CSS smooth scrolling breaks Lenis momentum scrolling.
+- **Advanced Scroll Animations:** The user specifically wants scroll-triggered reveal and parallax animations mirroring the cinematic effects seen on `https://lv8tech.ai/`. Future agents should utilize `framer-motion` (e.g., `useScroll`, `useTransform`, and `motion.div`) integrated with Lenis to achieve these heavy scroll-driven typography reveals and image parallax effects.
 - **Icons:** We use `lucide-react` for standard icons, and custom SVG components in `src/components/Icons.tsx` for GitHub and LinkedIn.
 
 ## File Structure & State
