@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-base: #08090C;
+    --bg-surface: #0E1015;
+    --bg-surface-elevated: #151820;
+    --gold: #E8B54D;
+    --gold-glow: rgba(232, 181, 77, 0.18);
+    --gold-dim: rgba(232, 181, 77, 0.45);
+    --emerald: #4FD188;
+    --emerald-glow: rgba(79, 209, 136, 0.2);
+    --border-dim: #222630;
+    --border-glow: rgba(232, 181, 77, 0.28);
+    --text-main: #F2F2F5;
+    --text-muted: #8E939F;
+    --text-faint: #565C6B;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: #08090C;
+    color: #F2F2F5;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  body {
+    background-color: #08090C;
+    color: #F2F2F5;
+    overflow-x: hidden;
+    selection-background-color: #E8B54D;
+    selection-color: #08090C;
+  }
+
+  ::selection {
+    background-color: #E8B54D;
+    color: #08090C;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #08090C;
+}
+::-webkit-scrollbar-thumb {
+  background: #232733;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E8B54D;
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: rgba(14, 16, 21, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel:hover {
+  border-color: rgba(232, 181, 77, 0.25);
+  box-shadow: 0 0 30px -10px rgba(232, 181, 77, 0.12);
+}
+
+.glass-card {
+  background: radial-gradient(120% 120% at 50% 0%, rgba(25, 28, 38, 0.5) 0%, rgba(11, 13, 17, 0.8) 100%);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card:hover {
+  border-color: rgba(232, 181, 77, 0.35);
+  box-shadow: 0 10px 40px -15px rgba(232, 181, 77, 0.15);
+}
+
+/* Glowing Elements */
+.glow-gold {
+  box-shadow: 0 0 25px -5px rgba(232, 181, 77, 0.25);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 20px -5px rgba(79, 209, 136, 0.35);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5DEB3 50%, #E8B54D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Noise overlay */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+}
+
+/* Radial ambient light */
+.ambient-gold-radial {
+  background: radial-gradient(circle at 50% 15%, rgba(232, 181, 77, 0.07) 0%, transparent 65%);
+}
+
+.ambient-emerald-radial {
+  background: radial-gradient(circle at 85% 20%, rgba(79, 209, 136, 0.05) 0%, transparent 50%);
+}
