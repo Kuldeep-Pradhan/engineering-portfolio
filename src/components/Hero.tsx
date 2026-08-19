@@ -17,7 +17,7 @@ export default function Hero() {
 
   const item = {
     hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 20 } },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 120, damping: 20 } },
   };
 
   return (
