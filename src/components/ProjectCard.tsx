@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { ArrowUpRight, Cpu, Layers } from "lucide-react";
+import { ArrowUpRight, Cpu } from "lucide-react";
 import { ProjectCaseStudy } from "@/data/projects";
+import { motion } from "framer-motion";
 
 interface ProjectCardProps {
   project: ProjectCaseStudy;
@@ -14,7 +15,11 @@ export default function ProjectCard({
   onOpenCaseFile,
 }: ProjectCardProps) {
   return (
-    <article
+    <motion.article
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       onClick={() => onOpenCaseFile(project)}
       className="group relative p-6 sm:p-7 rounded-2xl glass-card border border-white/10 hover:border-[#E8B54D]/40 transition-all duration-300 cursor-pointer flex flex-col justify-between"
     >
@@ -99,6 +104,6 @@ export default function ProjectCard({
           </span>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

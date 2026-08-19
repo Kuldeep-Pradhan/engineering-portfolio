@@ -3,13 +3,20 @@
 import React from "react";
 import { experienceData, educationData } from "@/data/experience";
 import { Briefcase, Award, GraduationCap, MapPin, Calendar, CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function ExperienceTimeline() {
   return (
     <section id="experience" className="py-20 scroll-mt-24 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="mb-14">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-14"
+        >
           <div className="flex items-center gap-2 mb-2 font-mono text-xs text-[#E8B54D] uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-[#E8B54D]" />
             SC.05 · CAREER JOURNEY &amp; PROOF
@@ -20,13 +27,17 @@ export default function ExperienceTimeline() {
           <p className="text-sm text-[#8E939F] mt-1 max-w-xl">
             A track record of engineering scalable fintech products, high-throughput microservices, and leading full-stack implementations.
           </p>
-        </div>
+        </motion.div>
 
         {/* Experience Timeline Grid */}
         <div className="space-y-8 relative before:absolute before:inset-0 before:left-3.5 sm:before:left-6 before:w-px before:bg-gradient-to-b before:from-[#E8B54D]/50 before:via-[#2D3139] before:to-transparent">
           {experienceData.map((item, idx) => (
-            <div
+            <motion.div
               key={item.id}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
               className="relative flex items-start gap-6 sm:gap-10 group"
             >
               {/* Timeline Marker Node */}
@@ -108,21 +119,30 @@ export default function ExperienceTimeline() {
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Education & Academic Honors */}
         <div className="mt-16 pt-12 border-t border-[#2D3139]/60">
-          <div className="flex items-center gap-2 mb-6 font-mono text-xs text-[#E8B54D] uppercase tracking-wider">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-2 mb-6 font-mono text-xs text-[#E8B54D] uppercase tracking-wider"
+          >
             <GraduationCap className="w-4 h-4" />
             ACADEMIC FOUNDATION &amp; CERTIFICATIONS
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {educationData.map((edu, idx) => (
-              <div
+              <motion.div
                 key={idx}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
                 className="p-6 rounded-2xl glass-card border border-white/5 flex flex-col justify-between"
               >
                 <div>
@@ -147,7 +167,7 @@ export default function ExperienceTimeline() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
