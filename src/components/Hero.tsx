@@ -1,10 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { ArrowDown, Shield, Layers, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
+import { useMounted } from "@/components/motion/ScrollReveal";
 
 export default function Hero() {
+  const reduceMotion = useReducedMotion();
+  const mounted = useMounted();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Scroll-linked cinematic exit: as the hero scrolls away, its content
+  // drifts up, fades, and gently scales down — mirroring lv8tech.ai.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.96]);
+
+  // Only apply scroll-driven styles after mount so SSR HTML matches the
+  // first client render (prevents a hydration mismatch on inline style).
+  const scrollStyle = reduceMotion || !mounted ? undefined : { y, opacity, scale };
+
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -17,21 +43,28 @@ export default function Hero() {
 
   const item = {
     hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 120, damping: 20 } },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 120, damping: 20 },
+    },
   };
 
   return (
     <section
+      ref={sectionRef}
       id="top"
       className="relative pt-36 pb-20 md:pt-44 md:pb-28 overflow-hidden"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center text-center max-w-4xl mx-auto"
           variants={container}
           initial="hidden"
           animate="show"
+          style={scrollStyle}
         >
+
           {/* Monospace Eyebrow Badge */}
           <motion.div variants={item} className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#E8B54D]/10 border border-[#E8B54D]/30 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-[#E8B54D] animate-pulse" />
@@ -82,6 +115,25 @@ export default function Hero() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Scroll cue — fades out as you begin scrolling */}
+      {!reduceMotion && (
+        <motion.div
+          style={mounted ? { opacity } : undefined}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+          aria-hidden="true"
+        >
+
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#565C6B]">
+            Scroll
+          </span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="w-px h-8 bg-gradient-to-b from-[#E8B54D]/60 to-transparent"
+          />
+        </motion.div>
+      )}
     </section>
   );
 }

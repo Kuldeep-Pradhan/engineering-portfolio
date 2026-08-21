@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-import { Download, Menu, X, FileText } from "lucide-react";
+import { Menu, X, FileText } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 
 export default function Navbar() {

@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { skillsData } from "@/data/skills";
-import { Server, Layout, Database, Cloud, Shield, Check, Sparkles } from "lucide-react";
+import { Server, Layout, Database, Cloud, Shield, Sparkles, LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SkillsMatrix() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const iconsMap: Record<string, any> = {
+  const iconsMap: Record<string, LucideIcon> = {
     "backend-frameworks": Server,
     "frontend-technologies": Layout,
     "databases-caching": Database,

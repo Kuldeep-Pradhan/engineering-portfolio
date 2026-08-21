@@ -15,6 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://kuldeeppradhan.in"),
   title: "Kuldeep Pradhan | Full Stack Engineer — Node.js & Fintech Systems",
   description:
     "Full Stack Engineer with 4+ years of experience specializing in Node.js microservices, 2,500+ TPS fintech systems, and React/Next.js frontends.",

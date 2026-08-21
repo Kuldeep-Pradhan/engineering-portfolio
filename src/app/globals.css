@@ -17,8 +17,12 @@
     --text-faint: #565C6B;
   }
 
+  /*
+   * NOTE: Do NOT add `scroll-behavior: smooth` here.
+   * Native CSS smooth scrolling fights Lenis and kills its momentum easing.
+   * Lenis handles all smooth scrolling (see SmoothScrollProvider).
+   */
   html {
-    scroll-behavior: smooth;
     background-color: #08090C;
     color: #F2F2F5;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -42,13 +46,16 @@
 ::-webkit-scrollbar {
   width: 7px;
 }
+
 ::-webkit-scrollbar-track {
   background: #08090C;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #232733;
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #E8B54D;
 }
@@ -99,9 +106,20 @@
 
 /* Radial ambient light */
 @keyframes ambient-pulse {
-  0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-  50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
-  100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  0% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 .ambient-gold-radial {
@@ -112,4 +130,101 @@
 .ambient-emerald-radial {
   background: radial-gradient(circle at 85% 20%, rgba(79, 209, 136, 0.06) 0%, transparent 50%);
   animation: ambient-pulse 10s ease-in-out infinite alternate-reverse;
+}
+
+/* ------------------------------------------------------------------ */
+/* Social icon tiles — reflective black square boxes                   */
+/* Used in the Contact section for LinkedIn / GitHub.                  */
+/* ------------------------------------------------------------------ */
+.social-tile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 0.875rem;
+  /* Deep black with a subtle top-down sheen for a glossy, reflective look */
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, #14161c 0%, #050506 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.65),
+    0 8px 20px -8px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Moving glare highlight across the glossy surface */
+.social-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.social-tile:hover {
+  transform: translateY(-3px);
+  border-color: rgba(232, 181, 77, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.65),
+    0 12px 26px -8px rgba(232, 181, 77, 0.25);
+}
+
+.social-tile:hover::before {
+  transform: translateX(120%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Lenis smooth scroll — recommended baseline CSS                      */
+/* https://github.com/darkroomengineering/lenis#recommended-css        */
+/* ------------------------------------------------------------------ */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Accessibility — respect users who prefer reduced motion            */
+/* Framer Motion honors this at the JS layer too (useReducedMotion),  */
+/* but we also disable ambient CSS animations for safety.             */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+
+  .ambient-gold-radial,
+  .ambient-emerald-radial {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

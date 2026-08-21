@@ -14,6 +14,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import { projectsData, ProjectCaseStudy } from "@/data/projects";
 import { Layers, ArrowRight, ShieldCheck } from "lucide-react";
+import { Reveal } from "@/components/motion/ScrollReveal";
 
 export default function Home() {
   const [selectedProject, setSelectedProject] =
@@ -38,7 +39,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             {/* Section Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
-              <div>
+              <Reveal>
                 <div className="flex items-center gap-2 mb-2 font-mono text-xs text-[#E8B54D] uppercase tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#E8B54D]" />
                   SC.03 · FLAGSHIP SYSTEMS &amp; ARCHITECTURES
@@ -49,27 +50,35 @@ export default function Home() {
                 <p className="text-sm sm:text-base text-[#8E939F] mt-2 max-w-2xl leading-relaxed">
                   Real-world microservices, high-throughput banking integrations, and cloud infrastructure engineered for resilience and speed.
                 </p>
-              </div>
+              </Reveal>
 
-              <div className="flex items-center gap-2 font-mono text-xs text-[#8E939F] bg-white/5 px-3.5 py-2 rounded-xl border border-white/10 w-fit">
+              <Reveal
+                direction="left"
+                delay={0.15}
+                className="flex items-center gap-2 font-mono text-xs text-[#8E939F] bg-white/5 px-3.5 py-2 rounded-xl border border-white/10 w-fit"
+              >
                 <ShieldCheck className="w-4 h-4 text-[#4FD188]" />
                 <span>6 Production &amp; Open Source Files</span>
-              </div>
+              </Reveal>
             </div>
 
             {/* 6 Case Files Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projectsData.map((project) => (
+              {projectsData.map((project, idx) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
+                  index={idx}
                   onOpenCaseFile={(p) => setSelectedProject(p)}
                 />
               ))}
             </div>
 
             {/* Bottom Callout Banner */}
-            <div className="mt-12 p-6 rounded-2xl glass-panel border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <Reveal
+              blur
+              className="mt-12 p-6 rounded-2xl glass-panel border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4"
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#E8B54D]/15 border border-[#E8B54D]/30 flex items-center justify-center text-[#E8B54D] shrink-0">
                   <Layers className="w-5 h-5" />
@@ -91,7 +100,7 @@ export default function Home() {
                 <span>Discuss System Design</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </a>
-            </div>
+            </Reveal>
           </div>
         </section>
 

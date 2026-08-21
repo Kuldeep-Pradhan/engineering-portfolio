@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
-import { Zap, Users, TrendingDown, Server, Building2 } from "lucide-react";
+import { Zap, Users, TrendingDown, Server } from "lucide-react";
+import { Stagger, StaggerItem } from "@/components/motion/ScrollReveal";
 
 export default function MetricsStrip() {
+
   const metrics = [
     {
       value: "2,500+",
@@ -42,11 +44,14 @@ export default function MetricsStrip() {
   return (
     <section className="py-12 border-y border-[#2D3139]/60 bg-[#0E1015]/40 backdrop-blur-sm relative z-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Stagger
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          stagger={0.1}
+        >
           {metrics.map((m, idx) => {
             const Icon = m.icon;
             return (
-              <div
+              <StaggerItem
                 key={idx}
                 className="p-6 rounded-2xl glass-card border border-white/5 hover:border-[#E8B54D]/30 transition-all duration-300 group"
               >
@@ -74,10 +79,10 @@ export default function MetricsStrip() {
                 <p className="text-xs text-[#8E939F] font-normal">
                   {m.subtext}
                 </p>
-              </div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

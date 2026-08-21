@@ -1,15 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 import confetti from "canvas-confetti";
-import { Mail, Phone, Copy, Check, Send } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Copy,
+  Check,
+  Send,
+  MessageCircle,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
+import { Reveal } from "@/components/motion/ScrollReveal";
+
+type SendStatus = "idle" | "sending" | "success" | "error";
 
 export default function ContactSection() {
   const [copied, setCopied] = useState(false);
-  const [formData, setFormData] = useState({ name: "", subject: "", message: "" });
+  const [formData, setFormData] = useState({ email: "", subject: "", message: "" });
+  const [status, setStatus] = useState<SendStatus>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const email = "kuldeeppradhan9@gmail.com";
   const phone = "+91 8117012315";
+  const whatsapp = "+91 9090569556";
+  const whatsappLink = `https://wa.me/${whatsapp.replace(/[^0-9]/g, "")}`;
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(email);
@@ -23,22 +41,73 @@ export default function ContactSection() {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const body = `Hi Kuldeep,%0D%0A%0D%0A${formData.message.replace(/\n/g, '%0D%0A')}%0D%0A%0D%0AFrom:%0D%0A${formData.name}`;
-    window.location.href = `mailto:${email}?subject=${encodeURIComponent(formData.subject)}&body=${body}`;
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    // Guard: keys not configured yet.
+    if (
+      !serviceId ||
+      !templateId ||
+      !publicKey ||
+      serviceId.startsWith("your_") ||
+      templateId.startsWith("your_") ||
+      publicKey.startsWith("your_")
+    ) {
+      setStatus("error");
+      setErrorMsg(
+        "Email service isn't configured yet. Add your EmailJS keys to .env.local."
+      );
+      return;
+    }
+
+    try {
+      setStatus("sending");
+      setErrorMsg("");
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: email,
+        },
+        { publicKey }
+      );
+
+      setStatus("success");
+      setFormData({ email: "", subject: "", message: "" });
+      confetti({
+        particleCount: 90,
+        spread: 70,
+        origin: { y: 0.7 },
+        colors: ["#E8B54D", "#4FD188", "#FFFFFF"],
+      });
+      setTimeout(() => setStatus("idle"), 4000);
+    } catch (err) {
+      console.error("EmailJS send failed:", err);
+      setStatus("error");
+      setErrorMsg("Something went wrong sending your email. Please try again or email me directly.");
+    }
   };
+
+  const isSending = status === "sending";
 
   return (
     <section id="contact" className="py-24 scroll-mt-24 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="rounded-3xl border border-[#2D3139] bg-gradient-to-b from-[#12151D] via-[#0E1015] to-[#08090C] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl">
+        <Reveal blur className="rounded-3xl border border-[#2D3139] bg-gradient-to-b from-[#12151D] via-[#0E1015] to-[#08090C] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#E8B54D]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-5xl flex flex-col lg:flex-row gap-12">
-            
+
             {/* Left Column: Info */}
-            <div className="flex-1">
+            <Reveal direction="up" delay={0.1} className="flex-1">
               <div className="inline-flex items-center gap-2 mb-4 font-mono text-xs text-[#E8B54D] uppercase tracking-wider">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E8B54D]" />
                 CONNECT &amp; COLLABORATE
@@ -53,7 +122,9 @@ export default function ContactSection() {
                 Open to high-impact full-time Senior Full Stack / Backend Engineering roles, fintech microservices consulting, or architectural advisory.
               </p>
 
+              {/* Contact channel cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                {/* Email */}
                 <div className="p-5 rounded-2xl bg-black/40 border border-white/5 hover:border-[#E8B54D]/30 transition-all flex flex-col justify-between group">
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-mono text-xs text-[#8E939F]">DIRECT EMAIL</span>
@@ -76,9 +147,10 @@ export default function ContactSection() {
                   </div>
                 </div>
 
+                {/* Phone */}
                 <div className="p-5 rounded-2xl bg-black/40 border border-white/5 hover:border-[#E8B54D]/30 transition-all flex flex-col justify-between group">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono text-xs text-[#8E939F]">PHONE / WHATSAPP</span>
+                    <span className="font-mono text-xs text-[#8E939F]">PHONE / CALL</span>
                     <Phone className="w-4 h-4 text-[#4FD188]" />
                   </div>
                   <a
@@ -88,45 +160,62 @@ export default function ContactSection() {
                     {phone}
                   </a>
                 </div>
+
+                {/* WhatsApp */}
+                <div className="p-5 rounded-2xl bg-black/40 border border-white/5 hover:border-[#25D366]/40 transition-all flex flex-col justify-between group sm:col-span-2">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-mono text-xs text-[#8E939F]">WHATSAPP</span>
+                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                  </div>
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-sm font-semibold text-white group-hover:text-[#25D366] transition-colors"
+                  >
+                    {whatsapp}
+                  </a>
+                </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
+              {/* Social icons — reflective black square boxes */}
+              <div className="flex items-center gap-4">
                 <a
                   href="https://linkedin.com/in/kuldeep-pradhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-mono text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all hover:border-[#E8B54D]/40"
+                  aria-label="LinkedIn Profile"
+                  className="social-tile group"
                 >
-                  <LinkedinIcon className="w-4 h-4 text-[#8fc0ff]" />
-                  <span>LinkedIn Profile</span>
+                  <LinkedinIcon className="w-6 h-6 text-[#8fc0ff] transition-transform duration-300 group-hover:scale-110" />
                 </a>
 
                 <a
                   href="https://github.com/Kuldeep-Pradhan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-mono text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all hover:border-[#E8B54D]/40"
+                  aria-label="GitHub Profile"
+                  className="social-tile group"
                 >
-                  <GithubIcon className="w-4 h-4" />
-                  <span>GitHub</span>
+                  <GithubIcon className="w-6 h-6 text-neutral-100 transition-transform duration-300 group-hover:scale-110" />
                 </a>
               </div>
-            </div>
+            </Reveal>
 
-            {/* Right Column: Form */}
-            <div className="flex-1 lg:max-w-md w-full bg-[#08090C]/50 p-6 sm:p-8 rounded-2xl border border-white/5 relative z-10">
-              <h3 className="text-xl font-bold text-white mb-6">Send a Message</h3>
+            {/* Right Column: Send Email Form */}
+            <Reveal direction="left" delay={0.25} className="flex-1 lg:max-w-md w-full bg-[#08090C]/50 p-6 sm:p-8 rounded-2xl border border-white/5 relative z-10">
+              <h3 className="text-xl font-bold text-white mb-6">Send Email</h3>
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div>
-                  <label htmlFor="name" className="block text-xs font-mono text-[#8E939F] mb-1.5">Your Name</label>
+                  <label htmlFor="email" className="block text-xs font-mono text-[#8E939F] mb-1.5">Your Email ID</label>
                   <input
-                    type="text"
-                    id="name"
+                    type="email"
+                    id="email"
                     required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full bg-[#0E1015] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#E8B54D]/50 focus:ring-1 focus:ring-[#E8B54D]/50 transition-all"
-                    placeholder="John Doe"
+                    placeholder="you@example.com"
                   />
                 </div>
                 <div>
@@ -142,7 +231,7 @@ export default function ContactSection() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="message" className="block text-xs font-mono text-[#8E939F] mb-1.5">Message</label>
+                  <label htmlFor="message" className="block text-xs font-mono text-[#8E939F] mb-1.5">Body</label>
                   <textarea
                     id="message"
                     required
@@ -153,18 +242,43 @@ export default function ContactSection() {
                     placeholder="Hello Kuldeep..."
                   />
                 </div>
+
+                {/* Status feedback */}
+                {status === "success" && (
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#4FD188] bg-[#4FD188]/10 border border-[#4FD188]/30 rounded-lg px-3 py-2">
+                    <Check className="w-4 h-4 shrink-0" />
+                    <span>Email sent successfully — I&apos;ll get back to you soon!</span>
+                  </div>
+                )}
+                {status === "error" && (
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#F5736B] bg-[#F5736B]/10 border border-[#F5736B]/30 rounded-lg px-3 py-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="mt-2 inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl font-mono text-sm font-bold bg-[#E8B54D] text-[#08090C] hover:bg-[#F5C86C] transition-all shadow-[0_0_20px_rgba(232,181,77,0.2)]"
+                  disabled={isSending}
+                  className="mt-2 inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl font-mono text-sm font-bold bg-[#E8B54D] text-[#08090C] hover:bg-[#F5C86C] transition-all shadow-[0_0_20px_rgba(232,181,77,0.2)] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Open Mail App</span>
+                  {isSending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Send Email</span>
+                    </>
+                  )}
                 </button>
               </form>
-            </div>
+            </Reveal>
 
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

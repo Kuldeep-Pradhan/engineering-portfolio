@@ -11,7 +11,7 @@ This file is intended for any AI coding assistant or agent working on this repos
 - **Name Usage:** ALWAYS use the full name "KULDEEP PRADHAN". NEVER use initials like "KP" or any brand prefix like "KP · KULDEEP PRADHAN".
 - **Banking Partners:** You may freely use "IPPB" alongside other banking partners like "NSDL", "Kotak", and "CSC" in case studies and documentation.
 - **Hero Section:** Do not include a personal photo. Do not include "Telemetry Widget" or "Live Telemetry console" buttons. Do not include "2.5k TPS Ready" badges.
-- **Contact:** The Contact section includes a `mailto:` powered form. Keep it lightweight without requiring backend servers.
+- **Contact:** The Contact section form sends real email via **EmailJS** (`@emailjs/browser`), client-side with no backend. Keys live in `.env.local` as `NEXT_PUBLIC_EMAILJS_SERVICE_ID`, `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`, and `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` (template vars: `{{from_email}}`, `{{subject}}`, `{{message}}`, `{{to_email}}`). Fields are Your Email ID / Subject / Body; the button is "Send Email". Keep it backend-free. Contact channels also include Email, Phone, and WhatsApp (+91 9090569556); LinkedIn/GitHub render as reflective black square tiles via the `.social-tile` class in `globals.css`.
 
 ## UI/UX Design Language
 - **Theme:** Obsidian Gold & Dark Luxe theme. Backgrounds are very dark (e.g., `#08090C`, `#0E1015`) with subtle gold accents (`#E8B54D`) and glassmorphism panels.
@@ -30,5 +30,17 @@ This file is intended for any AI coding assistant or agent working on this repos
 - Built all major sections: Navbar (with icon links), Hero, Selected Work (with Case File Modals), Skills Matrix, Experience Timeline, and Contact.
 - Applied the dark luxe visual theme and integrated Lenis smooth scrolling.
 - Addressed specific user revisions: Swapped to an enterprise font (Inter), removed telemetry UI, and added FDE certification.
+- Built a cinematic scroll-animation system (lv8tech.ai-style) — see below.
 
-*Note for future agents: Always adhere to the strict brand and content guidelines listed above.*
+## Scroll Animation System
+- **Reusable primitives** live in `src/components/motion/ScrollReveal.tsx`:
+  - `Reveal` — fade/slide (+ optional `blur`) reveal on scroll-in; supports `direction`, `delay`, `duration`, `as`.
+  - `Stagger` + `StaggerItem` — cascade children into view (used by `MetricsStrip`).
+  - `Parallax` — depth translation driven by `useScroll`/`useSpring` (used by the Footer watermark).
+  - `WordReveal` — scroll-linked word-by-word typography reveal for heavy headlines.
+  - `useMounted` — gates scroll-driven `style` bindings until after mount to prevent SSR/client hydration mismatches. **Any new scroll-linked motion value applied via `style` must be gated with this hook.**
+- **`SmoothScrollProvider`** is the backbone: it runs Lenis, routes in-page `#anchor` clicks through Lenis momentum scroll (offset -96px for the fixed navbar), exposes the instance on `window.__lenis`, and fully disables itself when `prefers-reduced-motion` is set.
+- **Accessibility:** every primitive and the Hero respect `useReducedMotion`; `globals.css` also disables ambient/CSS animation under `prefers-reduced-motion`.
+- **CSS:** `globals.css` intentionally omits `scroll-behavior: smooth` (it breaks Lenis) and includes the recommended Lenis baseline classes.
+
+*Note for future agents: Always adhere to the strict brand and content guidelines listed above. For any new scroll animation, reuse the primitives in `src/components/motion/ScrollReveal.tsx` rather than re-implementing `useScroll` logic, and remember to gate motion-value `style` props with `useMounted`.*

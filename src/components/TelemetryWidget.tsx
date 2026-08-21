@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Activity, ShieldCheck, Cpu, Zap, Terminal, RefreshCw, Radio } from "lucide-react";
+import { Activity, ShieldCheck, Cpu, Zap, Terminal, Radio } from "lucide-react";
 
 interface LogEntry {
   id: string;

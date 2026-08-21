@@ -3,17 +3,23 @@
 import React from "react";
 import { ArrowUp, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/Icons";
+import { Reveal, Parallax } from "@/components/motion/ScrollReveal";
 
 export default function Footer() {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Prefer Lenis momentum scroll when available; fall back to native.
+    if (typeof window !== "undefined" && window.__lenis) {
+      window.__lenis.scrollTo(0, { duration: 1.6 });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
     <footer className="relative pt-20 pb-12 border-t border-[#2D3139]/80 bg-[#060709] overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Top Footer Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-16 border-b border-white/5">
+        <Reveal className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-16 border-b border-white/5">
           <div className="md:col-span-2">
             <h3 className="font-mono text-base font-bold text-white tracking-wider uppercase mb-2">
               KULDEEP PRADHAN
@@ -33,28 +39,23 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 font-mono text-xs text-[#8E939F]">
               <li>
-                <a href="#telemetry" className="hover:text-[#E8B54D] transition-colors">
-                  01 · Telemetry Console
-                </a>
-              </li>
-              <li>
                 <a href="#work" className="hover:text-[#E8B54D] transition-colors">
-                  02 · Selected Work (6 Cases)
+                  01 · Selected Work (6 Cases)
                 </a>
               </li>
               <li>
                 <a href="#skills" className="hover:text-[#E8B54D] transition-colors">
-                  03 · Skills Universe
+                  02 · Skills Universe
                 </a>
               </li>
               <li>
                 <a href="#experience" className="hover:text-[#E8B54D] transition-colors">
-                  04 · Work History
+                  03 · Work History
                 </a>
               </li>
               <li>
                 <a href="#contact" className="hover:text-[#E8B54D] transition-colors">
-                  05 · Contact &amp; Connect
+                  04 · Contact &amp; Connect
                 </a>
               </li>
             </ul>
@@ -92,7 +93,7 @@ export default function Footer() {
               </a>
             </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Bottom Row */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#8E939F]">
@@ -102,20 +103,24 @@ export default function Footer() {
           </p>
           <button
             onClick={scrollToTop}
-            className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-[#E8B54D] transition-colors"
+            className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-[#E8B54D] transition-colors group"
           >
             <span>Back to top</span>
-            <ArrowUp className="w-3.5 h-3.5" />
+            <ArrowUp className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 
-        {/* Monumental Watermark Typography */}
-        <div
-          className="mt-16 text-center select-none pointer-events-none opacity-[0.03] font-extrabold tracking-tighter text-6xl sm:text-8xl md:text-9xl text-white uppercase overflow-hidden whitespace-nowrap"
-          aria-hidden="true"
-        >
-          KULDEEP PRADHAN
-        </div>
+        {/* Monumental Watermark Typography — drifts with a subtle parallax.
+            Uses a fluid clamp() size so the full name always fits on one line
+            without being cropped, at any screen width. */}
+        <Parallax speed={40} className="mt-16">
+          <div
+            className="w-full text-center select-none pointer-events-none opacity-[0.04] font-extrabold tracking-tight text-white uppercase whitespace-nowrap leading-none text-[clamp(1.75rem,9.5vw,7rem)]"
+            aria-hidden="true"
+          >
+            KULDEEP&nbsp;PRADHAN
+          </div>
+        </Parallax>
       </div>
     </footer>
   );

@@ -24,13 +24,18 @@ export default function CaseFileModal({
     };
     if (project) {
       document.body.style.overflow = "hidden";
+      // Pause Lenis so the page behind the modal stays put. The modal body
+      // carries `data-lenis-prevent`, so it scrolls natively on its own.
+      window.__lenis?.stop();
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => {
       document.body.style.overflow = "unset";
+      window.__lenis?.start();
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [project, onClose]);
+
 
   if (!project) return null;
 
@@ -71,8 +76,15 @@ export default function CaseFileModal({
           </div>
         </div>
 
-        {/* Scrollable Body Content */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-8 flex-1">
+        {/* Scrollable Body Content.
+            `data-lenis-prevent` tells Lenis to ignore wheel/touch events here
+            so this container scrolls natively; `overscroll-contain` stops the
+            scroll from chaining to the page at the top/bottom edges. */}
+        <div
+          data-lenis-prevent
+          className="p-6 sm:p-8 overflow-y-auto overscroll-contain space-y-8 flex-1"
+        >
+
           {/* Title & Status */}
           <div>
             <div className="flex flex-wrap items-center gap-3 mb-3">

@@ -8,20 +8,27 @@ import { motion } from "framer-motion";
 interface ProjectCardProps {
   project: ProjectCaseStudy;
   onOpenCaseFile: (p: ProjectCaseStudy) => void;
+  /** Position in the grid — used to stagger the scroll reveal. */
+  index?: number;
 }
 
 export default function ProjectCard({
   project,
   onOpenCaseFile,
+  index = 0,
 }: ProjectCardProps) {
+  // Stagger cards within their row (3-col grid) so each row cascades in.
+  const staggerDelay = (index % 3) * 0.12;
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.6, delay: staggerDelay, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
       onClick={() => onOpenCaseFile(project)}
-      className="group relative p-6 sm:p-7 rounded-2xl glass-card border border-white/10 hover:border-[#E8B54D]/40 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+      className="group relative p-6 sm:p-7 rounded-2xl glass-card border border-white/10 hover:border-[#E8B54D]/40 transition-colors duration-300 cursor-pointer flex flex-col justify-between"
     >
       {/* Glow Hover background effect */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#E8B54D]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
