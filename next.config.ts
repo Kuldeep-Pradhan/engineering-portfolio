@@ -37,6 +37,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",
+      "media-src 'self' data: blob:",
       "connect-src 'self' https://api.emailjs.com https://*.emailjs.com",
       "frame-ancestors 'none'",
       "object-src 'none'",
@@ -53,6 +54,20 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        // Next.js serves everything in public/ with `Cache-Control: max-age=0`
+        // because it cannot know when those files change. For the hero film
+        // that means re-downloading ~900KB on every navigation. The filenames
+        // are stable and the content only changes when the generator is re-run,
+        // so pin them for a year and bump the filename if the film changes.
+        source: "/film/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
       },
     ];
   },

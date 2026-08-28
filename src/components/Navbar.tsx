@@ -24,17 +24,36 @@ export default function Navbar() {
       origin: { y: 0.15 },
       colors: ["#E8B54D", "#4FD188", "#FFFFFF"],
     });
-    // Open resume PDF in new tab/trigger download
-    window.open("/resume.pdf", "_blank");
+    // Trigger download automatically
+    const link = document.createElement("a");
+    link.href = "/resume.pdf";
+    link.download = "Kuldeep_Pradhan_Resume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full pt-4 px-4 sm:px-6 pointer-events-none transition-all duration-300">
+      {/*
+        No backdrop-blur here, deliberately. The navbar is fixed, so it sits
+        over the hero scrub film for the whole hero. Profiling that
+        (scripts/diagnose-frames.mjs) put backdrop-filter over the moving film
+        at roughly half the frame rate — 33.3ms vs 16.8ms median.
+
+        Trying to disable it from CSS only while the film is visible does NOT
+        work: `backdrop-filter: none` is the property's initial value, so Next's
+        minifier strips the declaration as a redundant no-op, even with
+        !important. And no other value avoids the cost, because any
+        backdrop-filter still forces the backdrop snapshot. So the blur is gone
+        from the markup and the background opacity carries the contrast
+        instead — the same trade lv8tech.ai made for the same reason.
+      */}
       <div
-        className={`w-full max-w-6xl rounded-full px-5 sm:px-7 py-3 border transition-all duration-300 pointer-events-auto flex items-center justify-between shadow-2xl ${
+        className={`nav-pill w-full max-w-6xl rounded-full px-5 sm:px-7 py-3 border transition-all duration-300 pointer-events-auto flex items-center justify-between shadow-2xl ${
           scrolled
-            ? "bg-[#0E1015]/90 backdrop-blur-xl border-[#2D3139] shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
-            : "bg-[#0E1015]/60 backdrop-blur-md border-white/10"
+            ? "bg-[#0E1015]/95 border-[#2D3139] shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+            : "bg-[#0E1015]/82 border-white/10"
         }`}
       >
         {/* Brand Full Name */}
@@ -93,7 +112,7 @@ export default function Navbar() {
           </a>
           
           <a
-            href="https://linkedin.com/in/kuldeep-pradhan"
+            href="https://www.linkedin.com/in/kuldeep-pradhan-nodejs"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#8E939F] hover:text-white transition-colors"

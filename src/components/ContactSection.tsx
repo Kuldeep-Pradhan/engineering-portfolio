@@ -181,7 +181,7 @@ export default function ContactSection() {
               {/* Social icons — reflective black square boxes */}
               <div className="flex items-center gap-4">
                 <a
-                  href="https://linkedin.com/in/kuldeep-pradhan"
+                  href="https://www.linkedin.com/in/kuldeep-pradhan-nodejs"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn Profile"

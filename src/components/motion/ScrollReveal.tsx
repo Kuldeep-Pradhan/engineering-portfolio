@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useRef, ReactNode } from "react";
+import React, { useRef, useState, ReactNode } from "react";
 import {
     motion,
     useScroll,
     useTransform,
     useSpring,
     useReducedMotion,
+    useMotionValueEvent,
+    type MotionStyle,
+    type MotionValue,
     type Variants,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -31,6 +34,29 @@ export function useMounted() {
         () => true,
         () => false
     );
+}
+
+/**
+ * useReducedMotionSafe — SSR-safe `prefers-reduced-motion`.
+ *
+ * framer-motion's `useReducedMotion()` returns false during SSR (there is no
+ * `matchMedia` on the server) but the REAL value on the client's very first
+ * render. So any component that branches on it *during render* emits different
+ * markup on the server than on the client, and React reports a hydration
+ * failure. It only reproduces on machines that actually have the OS setting
+ * enabled, which makes it very easy to ship by accident.
+ *
+ * This returns false until after mount, so the first client render always
+ * matches the server. Reduced-motion visitors get the static treatment one
+ * render later — imperceptible, and it costs nothing.
+ *
+ * Use THIS, not `useReducedMotion()`, anywhere the value affects what you
+ * render. The raw hook is fine inside effects and event handlers.
+ */
+export function useReducedMotionSafe() {
+    const mounted = useMounted();
+    const reduce = useReducedMotion();
+    return mounted ? !!reduce : false;
 }
 
 
@@ -85,7 +111,7 @@ export function Reveal({
     once = true,
     as = "div",
 }: RevealProps) {
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useReducedMotionSafe();
     const MotionTag = motion[as] as typeof motion.div;
 
     if (reduceMotion) {
@@ -140,7 +166,7 @@ export function Stagger({
     delayChildren = 0,
     once = true,
 }: StaggerProps) {
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useReducedMotionSafe();
 
     if (reduceMotion) {
         return <div className={className}>{children}</div>;
@@ -184,7 +210,7 @@ export function StaggerItem({
     distance = 28,
     as = "div",
 }: StaggerItemProps) {
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useReducedMotionSafe();
     const MotionTag = motion[as] as typeof motion.div;
 
     if (reduceMotion) {
@@ -231,7 +257,7 @@ export function Parallax({
     speed = 60,
     axis = "y",
 }: ParallaxProps) {
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useReducedMotionSafe();
     const mounted = useMounted();
     const ref = useRef<HTMLDivElement>(null);
 
@@ -245,7 +271,14 @@ export function Parallax({
     const value = useSpring(raw, { stiffness: 120, damping: 30, mass: 0.4 });
 
     if (reduceMotion) {
-        return <div className={className}>{children}</div>;
+        // The ref must still be attached even though nothing moves: useScroll
+        // above is holding it as its target, and an unattached target ref makes
+        // framer-motion warn "Target ref is defined but not hydrated".
+        return (
+            <div ref={ref} className={className}>
+                {children}
+            </div>
+        );
     }
 
     return (
@@ -286,7 +319,7 @@ export function WordReveal({
     className,
     highlightClassName = "text-white",
 }: WordRevealProps) {
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = useReducedMotionSafe();
     const ref = useRef<HTMLParagraphElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -297,8 +330,11 @@ export function WordReveal({
     const words = text.split(" ");
 
     if (reduceMotion) {
+        // ref stays attached — see the note in Parallax.
         return (
-            <p className={cn(highlightClassName, className)}>{text}</p>
+            <p ref={ref} className={cn(highlightClassName, className)}>
+                {text}
+            </p>
         );
     }
 
@@ -340,5 +376,180 @@ function Word({
                 {children}
             </motion.span>
         </span>
+    );
+}
+
+/* ================================================================== */
+/* ScrollLine                                                         */
+/* One line of display type for a scroll-choreographed sequence.      */
+/* Rises out of a mask ON LOAD, then exits SIDEWAYS on scroll.        */
+/* ================================================================== */
+/**
+ * Why the entrance is on load and not scroll-linked:
+ *
+ * Scroll progress is 0 at the top of the page, so a scroll-driven rise would
+ * leave the headline hidden until the visitor scrolled. lv8tech.ai hit exactly
+ * this and their source comments record the fix — the first heading plays on
+ * load; only later beats are keyed to scroll. We do the same.
+ *
+ * Why two nested elements:
+ *
+ * The mask that makes the rise look good would CLIP a sideways exit. So the
+ * mask lives on the OUTER element and that is what slides — an element's own
+ * overflow never clips its own travel — while the INNER element does the
+ * vertical rise inside it.
+ */
+interface ScrollLineProps {
+    children: ReactNode;
+    /** Usually `scrollYProgress` of the hero track. */
+    progress: MotionValue<number>;
+    /** [start, end] of the sideways exit, in progress units. */
+    exitRange: [number, number];
+    /** Pixels travelled on exit. Negative goes left. */
+    exitX?: number;
+    /** Seconds before this line's entrance starts, for staggering. */
+    delay?: number;
+    className?: string;
+}
+
+export function ScrollLine({
+    children,
+    progress,
+    exitRange,
+    exitX = -300,
+    delay = 0,
+    className,
+}: ScrollLineProps) {
+    const reduceMotion = useReducedMotionSafe();
+    const mounted = useMounted();
+
+    const x = useTransform(progress, exitRange, [0, exitX]);
+    const opacity = useTransform(progress, exitRange, [1, 0]);
+
+    // Scroll-linked styles bind only after mount, per AI_CONTEXT.md.
+    const bind = !reduceMotion && mounted;
+
+    return (
+        <motion.span
+            // The .2em of slack under the baseline is not optional: without it
+            // an overflow mask shears the tails off g, y and p.
+            // beat-fade reads opacity from --beat-opacity — see globals.css for
+            // why opacity cannot be set directly here.
+            className={cn("block overflow-clip pb-[0.2em] mb-[-0.2em]", bind && "beat-fade", className)}
+            style={bind ? ({ x, "--beat-opacity": opacity } as MotionStyle) : undefined}
+        >
+            <motion.span
+                className="block"
+                initial={{ y: "115%" }}
+                animate={{ y: "0%" }}
+                transition={{
+                    duration: reduceMotion ? 0 : 1.05,
+                    ease: EASE_OUT,
+                    delay: reduceMotion ? 0 : delay,
+                }}
+            >
+                {children}
+            </motion.span>
+        </motion.span>
+    );
+}
+
+/* ================================================================== */
+/* ScrollBeat                                                         */
+/* A block that appears and disappears over a window of scroll        */
+/* progress — used to swap the hero's statements in and out.          */
+/* ================================================================== */
+interface ScrollBeatProps {
+    children: ReactNode;
+    progress: MotionValue<number>;
+    /**
+     * [start, end] over which the block rises and fades in. OMIT this if the
+     * block should already be visible at progress 0.
+     *
+     * Do NOT try to fake that with a negative range like [-0.05, 0]. Every stop
+     * must lie within [0, 1]: framer-motion hands scroll-linked transforms to
+     * the Web Animations API as scroll-driven animations, where the input range
+     * becomes keyframe OFFSETS. A negative offset makes Element.animate() throw
+     * "Offsets must be monotonically non-decreasing", which takes down the whole
+     * React tree — the page renders as a blank body with no error boundary hit.
+     */
+    inRange?: [number, number];
+    /** [start, end] over which it lifts and fades out. Omit to stay put. */
+    outRange?: [number, number];
+    /** Pixels it rises from on entry, and lifts to on exit. */
+    y?: number;
+    className?: string;
+    /** Emitted as `data-beat`, so tests can assert this beat's visibility
+     *  window without depending on brittle CSS selectors. */
+    dataBeat?: string;
+}
+
+export function ScrollBeat({
+    children,
+    progress,
+    inRange,
+    outRange,
+    y = 34,
+    className,
+    dataBeat,
+}: ScrollBeatProps) {
+    const reduceMotion = useReducedMotionSafe();
+    const mounted = useMounted();
+
+    // useTransform needs a monotonically increasing input array, and every stop
+    // must be within [0, 1] — see the note on inRange above.
+    let stops: number[];
+    let opacityStops: number[];
+    let yStops: number[];
+
+    if (inRange && outRange) {
+        stops = [inRange[0], inRange[1], outRange[0], outRange[1]];
+        opacityStops = [0, 1, 1, 0];
+        yStops = [y, 0, 0, -y];
+    } else if (inRange) {
+        stops = [inRange[0], inRange[1]];
+        opacityStops = [0, 1];
+        yStops = [y, 0];
+    } else if (outRange) {
+        // Already in at progress 0; only leaves.
+        stops = [outRange[0], outRange[1]];
+        opacityStops = [1, 0];
+        yStops = [0, -y];
+    } else {
+        stops = [0, 1];
+        opacityStops = [1, 1];
+        yStops = [0, 0];
+    }
+
+    const opacity = useTransform(progress, stops, opacityStops);
+    const yv = useTransform(progress, stops, yStops);
+
+    /**
+     * An invisible block must not stay clickable, but pointer-events CANNOT be
+     * driven through a MotionValue in `style`. framer-motion binds every style
+     * MotionValue to a WAAPI animation, and interpolating a discrete keyword
+     * ("auto" -> "none") makes Element.animate() throw
+     * "Offsets must be monotonically non-decreasing", which takes the whole
+     * React tree down. So toggle a class from the value instead.
+     */
+    const [interactive, setInteractive] = useState(true);
+    useMotionValueEvent(opacity, "change", (o) => {
+        const next = o >= 0.05;
+        setInteractive((prev) => (prev === next ? prev : next));
+    });
+
+    const bind = !reduceMotion && mounted;
+
+    return (
+        <motion.div
+            className={cn(className, bind && "beat-fade", bind && !interactive && "pointer-events-none")}
+            data-beat={dataBeat}
+            // Faded, never aria-hidden or display:none — off-beat copy has to
+            // stay readable to screen readers and crawlers.
+            // opacity goes through --beat-opacity; see globals.css .beat-fade.
+            style={bind ? ({ y: yv, "--beat-opacity": opacity } as MotionStyle) : undefined}
+        >
+            {children}
+        </motion.div>
     );
 }

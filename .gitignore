@@ -1,4 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -39,3 +39,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code (machine-local permissions, not shared)
+.claude/settings.local.json
+
+# hero film â€” generated verification/preview output (the .mp4s in public/film
+# ARE committed; these are throwaway screenshots)
+scripts/film/verify/
+scripts/film/preview-*.png
+
+# claude code (local)
+.claude/settings.local.json
+
+
+# Raw videos
+
+/videos/
+
+
+
+# VSCode
+
+.vscode/
+
+

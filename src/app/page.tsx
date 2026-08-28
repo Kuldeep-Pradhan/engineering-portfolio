@@ -22,7 +22,13 @@ export default function Home() {
 
   return (
     <SmoothScrollProvider>
-      <div className="relative min-h-screen bg-[#08090C] text-[#F2F2F5]">
+      {/*
+        No background colour here on purpose. The fixed hero film in layout.tsx
+        sits at z-0, and an opaque wrapper painted straight over it. `body`
+        already carries bg-[#08090C], so the page still has its floor; z-10
+        keeps all content unambiguously above the film.
+      */}
+      <div className="relative z-10 min-h-screen text-[#F2F2F5]">
         {/* Navigation */}
         <Navbar />
 

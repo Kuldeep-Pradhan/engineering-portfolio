@@ -97,11 +97,27 @@
   background: linear-gradient(135deg, #FFFFFF 0%, #F5DEB3 50%, #E8B54D 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  /*
+   * Required, not decorative. The glyph fill is transparent, and text-shadow is
+   * an INHERITED property — so an ancestor carrying .film-type paints its
+   * shadow straight through the fill and the gradient reads as a dark ghost
+   * instead of gold. Kill the inherited shadow here.
+   */
+  text-shadow: none;
 }
 
 /* Noise overlay */
 .noise-overlay {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+  /*
+   * Promoted to its own compositor layer. This is a static full-viewport
+   * texture sitting at z-50 over the hero film; un-promoted, it was forcing a
+   * repaint of the stack beneath it on every scrub frame and measured as one of
+   * the largest single costs (scripts/diagnose-frames.mjs). Promoted, blending
+   * it is GPU work and effectively free.
+   */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Radial ambient light */
@@ -131,6 +147,95 @@
   background: radial-gradient(circle at 85% 20%, rgba(79, 209, 136, 0.06) 0%, transparent 50%);
   animation: ambient-pulse 10s ease-in-out infinite alternate-reverse;
 }
+
+/* ------------------------------------------------------------------ */
+/* Hero film — legibility grading                                      */
+/* ------------------------------------------------------------------ */
+/*
+ * Picture grading, painted as a ::after on the film layer itself rather than as
+ * a child element. Each extra full-viewport element in the film stack is
+ * another composite on every scrub frame, and profiling
+ * (scripts/diagnose-frames.mjs) showed the layer count dominated the frame
+ * budget — more than video decoding did.
+ *
+ * Layer 1 (radial) is the copy scrim. NOTE it is radial, not the 100deg wash
+ * lv8tech uses: theirs suits a left-hand copy column, ours is centred
+ * (items-center text-center), so density belongs in the middle of the frame.
+ *
+ * Layer 2 (linear) is the floor, keeping the bottom of the frame dark so the
+ * scroll cue and the boundary with the section below stay clean.
+ */
+.film-grade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      124% 94% at 50% 46%,
+      rgba(8, 9, 12, 0.76) 0%,
+      rgba(8, 9, 12, 0.5) 58%,
+      rgba(8, 9, 12, 0.24) 100%
+    ),
+    linear-gradient(
+      to top,
+      rgba(8, 9, 12, 0.92) 0%,
+      rgba(8, 9, 12, 0.66) 12%,
+      rgba(8, 9, 12, 0.3) 30%,
+      rgba(8, 9, 12, 0.08) 48%,
+      transparent 62%
+    );
+}
+
+/* Two tight shadows for edge definition, one wide for separation from the
+ * moving picture behind. */
+.film-type {
+  text-shadow:
+    0 1px 2px rgba(4, 5, 7, 0.9),
+    0 2px 8px rgba(4, 5, 7, 0.75),
+    0 1px 30px rgba(4, 5, 7, 0.7);
+}
+
+/*
+ * Scroll-choreographed fades read their opacity from a custom property rather
+ * than having it set directly.
+ *
+ * This is a workaround, not a preference. framer-motion treats `opacity` as an
+ * accelerated property and hands scroll-linked ones to the Web Animations API;
+ * in this setup that animation is never driven, so opacity sticks on its first
+ * keyframe forever while `transform` (which must be composed in JS) keeps
+ * updating. Symptom: beats that move but never fade.
+ *
+ * A custom property is never accelerated, so framer-motion writes it every
+ * frame and CSS resolves the opacity from it. `getComputedStyle().opacity`
+ * still reports the real value, so the beat-timing checks in
+ * scripts/verify-film.mjs continue to work.
+ */
+.beat-fade {
+  opacity: var(--beat-opacity, 1);
+}
+
+/*
+ * NOTE ON backdrop-filter AND THE FILM
+ *
+ * backdrop-filter over the moving film is the most expensive thing on this
+ * page. Measured with scripts/diagnose-frames.mjs against a production build,
+ * scrubbing the hero: median frame 33.3ms with it, 16.8ms without — 30fps vs
+ * 60fps. Hiding the video entirely helped far less, so the cost is compositing
+ * a blur over a changing texture, not decoding.
+ *
+ * There is deliberately NO CSS rule here that switches it off while the film is
+ * on screen, because that cannot be made to work: `none` is the initial value
+ * of backdrop-filter, so lightningcss strips the declaration from the
+ * production bundle as a redundant no-op — even with !important (verified: the
+ * shipped CSS kept only the -webkit- line and .nav-pill still computed
+ * blur(12px)). And no substitute value helps, since any backdrop-filter still
+ * forces the backdrop snapshot.
+ *
+ * So the fix lives in the markup: Navbar.tsx carries no backdrop-blur and uses
+ * a more opaque background instead. The .glass-panel / .glass-card blurs below
+ * are fine — they never overlap the film, which fades out with the hero track.
+ */
 
 /* ------------------------------------------------------------------ */
 /* Social icon tiles — reflective black square boxes                   */
@@ -217,6 +322,15 @@ html.lenis body {
   .ambient-gold-radial,
   .ambient-emerald-radial {
     animation: none !important;
+  }
+
+  /*
+   * Collapse the hero scrub track. ScrubFilm serves these visitors a still
+   * poster and never loads the video, so 300vh of travel would just be a long
+   * empty scroll with nothing happening.
+   */
+  .hero-track {
+    height: 100svh !important;
   }
 
   *,

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import ScrubFilm from "@/components/ScrubFilm";
 import "./globals.css";
 
 const inter = Inter({
@@ -46,10 +47,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans bg-[#08090C] text-[#F2F2F5] min-h-screen relative antialiased`}
+        suppressHydrationWarning
       >
+        {/*
+          Hero scrub film — a fixed layer whose playhead is the scroll position.
+          Mounted here rather than inside Hero so it is never trapped by an
+          ancestor transform: Hero animates its content with a motion.div, and
+          a transformed element becomes the containing block for position:fixed
+          descendants, which would make the film scroll away with the copy.
+          It fades itself out once the #top track is spent.
+        */}
+        <ScrubFilm trackId="top" />
+
         {/* Background Film Grain */}
         <div
           className="fixed inset-0 pointer-events-none z-50 noise-overlay opacity-40"
