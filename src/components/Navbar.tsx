@@ -8,6 +8,8 @@ import { GithubIcon, LinkedinIcon } from "./Icons";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Active section for the scrollspy — "" means we're in the hero.
+  const [active, setActive] = useState<string>("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +17,33 @@ export default function Navbar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Scrollspy: the active section is the last one whose top is above ~40% of
+  // the viewport. rAF-throttled so we only read positions once per frame.
+  useEffect(() => {
+    const ids = ["work", "skills", "experience", "contact"];
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const probe = window.innerHeight * 0.4;
+        let current = "";
+        for (const id of ids) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          if (el.getBoundingClientRect().top <= probe) current = id;
+        }
+        setActive((prev) => (prev === current ? prev : current));
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   const handleDownloadResume = () => {
@@ -74,25 +103,37 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-[#8E939F]">
           <a
             href="#work"
-            className="hover:text-[#E8B54D] transition-colors duration-200"
+            aria-current={active === "work" ? "true" : undefined}
+            className={`transition-colors duration-200 ${
+              active === "work" ? "text-[#E8B54D]" : "hover:text-[#E8B54D]"
+            }`}
           >
             Selected Work
           </a>
           <a
             href="#skills"
-            className="hover:text-[#E8B54D] transition-colors duration-200"
+            aria-current={active === "skills" ? "true" : undefined}
+            className={`transition-colors duration-200 ${
+              active === "skills" ? "text-[#E8B54D]" : "hover:text-[#E8B54D]"
+            }`}
           >
             Skills
           </a>
           <a
             href="#experience"
-            className="hover:text-[#E8B54D] transition-colors duration-200"
+            aria-current={active === "experience" ? "true" : undefined}
+            className={`transition-colors duration-200 ${
+              active === "experience" ? "text-[#E8B54D]" : "hover:text-[#E8B54D]"
+            }`}
           >
             Experience
           </a>
           <a
             href="#contact"
-            className="hover:text-[#E8B54D] transition-colors duration-200"
+            aria-current={active === "contact" ? "true" : undefined}
+            className={`transition-colors duration-200 ${
+              active === "contact" ? "text-[#E8B54D]" : "hover:text-[#E8B54D]"
+            }`}
           >
             Contact
           </a>
@@ -148,28 +189,40 @@ export default function Navbar() {
             <a
               href="#work"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-2 px-3 rounded-lg hover:bg-white/5 text-neutral-300 hover:text-[#E8B54D]"
+              aria-current={active === "work" ? "true" : undefined}
+              className={`py-2 px-3 rounded-lg hover:bg-white/5 hover:text-[#E8B54D] ${
+                active === "work" ? "text-[#E8B54D] bg-white/5" : "text-neutral-300"
+              }`}
             >
               Selected Work
             </a>
             <a
               href="#skills"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-2 px-3 rounded-lg hover:bg-white/5 text-neutral-300 hover:text-[#E8B54D]"
+              aria-current={active === "skills" ? "true" : undefined}
+              className={`py-2 px-3 rounded-lg hover:bg-white/5 hover:text-[#E8B54D] ${
+                active === "skills" ? "text-[#E8B54D] bg-white/5" : "text-neutral-300"
+              }`}
             >
               Technical Skills Matrix
             </a>
             <a
               href="#experience"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-2 px-3 rounded-lg hover:bg-white/5 text-neutral-300 hover:text-[#E8B54D]"
+              aria-current={active === "experience" ? "true" : undefined}
+              className={`py-2 px-3 rounded-lg hover:bg-white/5 hover:text-[#E8B54D] ${
+                active === "experience" ? "text-[#E8B54D] bg-white/5" : "text-neutral-300"
+              }`}
             >
               Work History &amp; Recognitions
             </a>
             <a
               href="#contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="py-2 px-3 rounded-lg hover:bg-white/5 text-neutral-300 hover:text-[#E8B54D]"
+              aria-current={active === "contact" ? "true" : undefined}
+              className={`py-2 px-3 rounded-lg hover:bg-white/5 hover:text-[#E8B54D] ${
+                active === "contact" ? "text-[#E8B54D] bg-white/5" : "text-neutral-300"
+              }`}
             >
               Get In Touch
             </a>
