@@ -371,9 +371,22 @@ function Word({
 }) {
     const opacity = useTransform(progress, range, [0.15, 1]);
     return (
-        <span className="relative mr-[0.25em] mt-[0.1em]">
-            <motion.span style={{ opacity }} className={highlightClassName}>
-                {children}
+        <span className="relative mt-[0.1em]">
+            {/*
+              opacity goes through --beat-opacity, not the style prop directly:
+              a scroll-linked opacity MotionValue is accelerated to WAAPI and in
+              this setup sticks on its first keyframe forever (see globals.css
+              .beat-fade for the full write-up). Custom properties are never
+              accelerated, so framer-motion writes them every frame.
+              The trailing {children} {" "} space is real text, not CSS margin —
+              words spaced purely by margin collapse to one word for screen
+              readers and crawlers.
+            */}
+            <motion.span
+                className={cn("beat-fade", highlightClassName)}
+                style={{ "--beat-opacity": opacity } as MotionStyle}
+            >
+                {children}{" "}
             </motion.span>
         </span>
     );

@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 
 import MetricsStrip from "@/components/MetricsStrip";
+import ComplianceBand from "@/components/ComplianceBand";
+import SystemArchitecture from "@/components/SystemArchitecture";
+import ProofStrip from "@/components/ProofStrip";
 import ProjectCard from "@/components/ProjectCard";
 import CaseFileModal from "@/components/CaseFileModal";
 import SkillsMatrix from "@/components/SkillsMatrix";
@@ -14,7 +17,7 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import { projectsData, ProjectCaseStudy } from "@/data/projects";
 import { Layers, ArrowRight, ShieldCheck } from "lucide-react";
-import { Reveal } from "@/components/motion/ScrollReveal";
+import { Reveal, WordReveal } from "@/components/motion/ScrollReveal";
 
 export default function Home() {
   const [selectedProject, setSelectedProject] =
@@ -35,10 +38,43 @@ export default function Home() {
         {/* Hero Section */}
         <Hero />
 
-        {/* Removed Telemetry Console Widget */}
-
         {/* Performance Metrics Strip */}
         <MetricsStrip />
+
+        {/* Compliance / reliability credentials */}
+        <ComplianceBand />
+
+        {/* SC.02: Production system topology */}
+        <SystemArchitecture />
+
+        {/* Engineering thesis — word-by-word scroll reveal */}
+        <section
+          className="relative py-24 sm:py-32 scroll-mt-24"
+          aria-label="Engineering philosophy"
+        >
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 text-center">
+            <Reveal>
+              <div className="mb-8 inline-flex items-center gap-2 font-mono text-xs text-[#E8B54D] uppercase tracking-wider">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#E8B54D]" />
+                THE ENGINEERING THESIS
+                <span className="h-1.5 w-1.5 rounded-full bg-[#E8B54D]" />
+              </div>
+            </Reveal>
+
+            <WordReveal
+              text="Backend systems that hold at peak load — stateless auth, event-driven messaging, and dashboards that never flinch at 2,500 TPS."
+              className="text-2xl leading-[1.25] font-extrabold tracking-tight sm:text-4xl sm:leading-[1.2] md:text-[2.75rem] md:leading-[1.15]"
+              highlightClassName="text-white"
+            />
+
+            <Reveal delay={0.1}>
+              <p className="mx-auto mt-10 max-w-2xl font-mono text-xs text-[#8E939F] sm:text-sm leading-relaxed">
+                Every system is designed against one question first:{" "}
+                <span className="text-[#E8B54D]">what happens at ten times the traffic?</span>
+              </p>
+            </Reveal>
+          </div>
+        </section>
 
         {/* SC.03: Selected Work / 6 Case Files */}
         <section id="work" className="py-24 scroll-mt-24 relative">
@@ -116,7 +152,10 @@ export default function Home() {
         {/* SC.05: Experience Timeline */}
         <ExperienceTimeline />
 
-        {/* SC.06: Contact Section */}
+        {/* SC.06: Recognitions surfaced as proof */}
+        <ProofStrip />
+
+        {/* Contact Section */}
         <ContactSection />
 
         {/* Footer */}
