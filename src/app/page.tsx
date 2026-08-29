@@ -63,8 +63,8 @@ export default function Home() {
 
             <WordReveal
               text="Backend systems that hold at peak load — robust KYC onboarding, stateless OAuth & JWT, and notification engines that never flinch at 2,500 TPS."
-              className="text-xl leading-relaxed font-light tracking-wide sm:text-2xl md:text-3xl text-neutral-400"
-              highlightClassName="text-white drop-shadow-sm"
+              className="text-lg sm:text-xl md:text-2xl leading-[1.8] font-normal text-[#8E939F]"
+              highlightClassName="text-white font-medium drop-shadow-sm"
             />
 
             <Reveal delay={0.1}>

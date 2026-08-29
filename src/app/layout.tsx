@@ -41,6 +41,8 @@ export const metadata: Metadata = {
   },
 };
 
+import Preloader from "@/components/Preloader";
+
 export default function RootLayout({
   children,
 }: Readonly<{

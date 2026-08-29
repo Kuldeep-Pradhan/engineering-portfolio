@@ -50,6 +50,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Allow LAN devices (phones/tablets) to access the dev server.
+  // This is a dev-only setting — ignored in production builds.
+  allowedDevOrigins: ["10.32.192.2"],
   async headers() {
     return [
       {

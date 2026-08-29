@@ -9,6 +9,8 @@ import {
   ScrollLine,
   ScrollBeat,
 } from "@/components/motion/ScrollReveal";
+import { useAppStore } from "@/store/useAppStore";
+import Preloader from "@/components/Preloader";
 
 /**
  * Hero
@@ -47,6 +49,7 @@ export default function Hero() {
   // prefers-reduced-motion set.
   const reduceMotion = useReducedMotionSafe();
   const mounted = useMounted();
+  const isVideoReady = useAppStore((state) => state.isVideoReady);
   const sectionRef = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -100,11 +103,17 @@ export default function Hero() {
       // without the film moving, 480vh would just be a long empty scroll.
       className="hero-track relative h-[240vh] md:h-[480vh]"
     >
-      <div className="sticky top-0 flex h-[100svh] items-center">
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
+      <div className="sticky top-0 flex h-[100svh] items-center justify-center">
+        <Preloader className="absolute inset-0 flex flex-col items-center justify-center z-50 pointer-events-none" />
+        
+        <div 
+          className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6"
+          style={{ transform: "translateZ(0)", willChange: "transform" }}
+        >
           <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
             {/* ---------- stacked message beats ---------- */}
             <div className={stageClass}>
+
               {/* BEAT 1 — eyebrow + headline */}
               {/* BEAT 1 — eyebrow + headline. No inRange: it is already fully
                   visible at progress 0 and only ever leaves. (A negative
@@ -118,7 +127,7 @@ export default function Hero() {
                 <motion.div
                   variants={item}
                   initial="hidden"
-                  animate="show"
+                  animate={isVideoReady ? "show" : "hidden"}
                   className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-[#E8B54D]/30 bg-[#E8B54D]/10 px-4 py-1.5"
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-[#E8B54D] animate-pulse" />

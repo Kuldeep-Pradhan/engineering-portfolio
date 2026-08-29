@@ -77,23 +77,23 @@ export default function SystemArchitecture() {
 
         {/* Flowchart Track Wrapper */}
         <div className="relative" ref={containerRef}>
-          {/* Central continuous track line (hidden on mobile) */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/5 -translate-x-1/2 hidden sm:block -z-10" />
+          {/* Central continuous track line */}
+          <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/5 -translate-x-1/2 -z-10" />
           
           {/* Animated filling glowing line */}
           <motion.div 
-            className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#E8B54D] -translate-x-1/2 hidden sm:block -z-10 shadow-[0_0_12px_rgba(232,181,77,0.8)] origin-top"
+            className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#E8B54D] -translate-x-1/2 -z-10 shadow-[0_0_12px_rgba(232,181,77,0.8)] origin-top"
             style={{ scaleY: scrollYProgress }}
           />
 
           {/* Edge lane */}
-          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16" stagger={0.08}>
+          <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16 relative" stagger={0.08}>
             {edgeClients.map((c, i) => {
               const Icon = c.icon;
               return (
                 <StaggerItem
                   key={i}
-                  className="p-5 rounded-2xl border border-white/10 flex items-center gap-4 bg-[#08090C]"
+                  className="p-5 rounded-2xl border border-white/10 flex items-center gap-4 bg-[#08090C] relative z-0"
                 >
                   <div className="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8fc0ff]">
                     <Icon className="w-5 h-5" />

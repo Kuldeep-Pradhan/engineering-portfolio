@@ -13,6 +13,7 @@ import {
     type Variants,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/store/useAppStore";
 
 /* ------------------------------------------------------------------ */
 /* Shared easing — a smooth, slightly cinematic curve                 */
@@ -443,6 +444,8 @@ export function ScrollLine({
     // Scroll-linked styles bind only after mount, per AI_CONTEXT.md.
     const bind = !reduceMotion && mounted;
 
+    const isVideoReady = useAppStore((state) => state.isVideoReady);
+
     return (
         <motion.span
             // The .2em of slack under the baseline is not optional: without it
@@ -453,14 +456,15 @@ export function ScrollLine({
             style={bind ? ({ x, "--beat-opacity": opacity } as MotionStyle) : undefined}
         >
             <motion.span
-                className="block"
-                initial={{ y: "115%" }}
-                animate={{ y: "0%" }}
+                initial={reduceMotion ? { y: 0 } : { y: "110%" }}
+                animate={isVideoReady ? { y: 0 } : { y: "110%" }}
                 transition={{
-                    duration: reduceMotion ? 0 : 1.05,
-                    ease: EASE_OUT,
-                    delay: reduceMotion ? 0 : delay,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 20,
+                    delay: delay,
                 }}
+                className="block"
             >
                 {children}
             </motion.span>

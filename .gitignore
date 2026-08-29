@@ -1,4 +1,4 @@
-﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -43,7 +43,7 @@ next-env.d.ts
 # claude code (machine-local permissions, not shared)
 .claude/settings.local.json
 
-# hero film â€” generated verification/preview output (the .mp4s in public/film
+# hero film — generated verification/preview output (the .mp4s in public/film
 # ARE committed; these are throwaway screenshots)
 scripts/film/verify/
 scripts/film/preview-*.png
@@ -62,4 +62,9 @@ scripts/film/preview-*.png
 
 .vscode/
 
+
+
+# AI agent folders
+.claude
+.gemini
 
