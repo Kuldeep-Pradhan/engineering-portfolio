@@ -556,7 +556,7 @@ export function ScrollBeat({
             style={
                 bind
                     ? ({ y: yv, "--beat-opacity": opacity } as MotionStyle)
-                    : ({ "--beat-opacity": ssrOpacity, transform: `translateY(${ssrY}px)` } as any)
+                    : ({ "--beat-opacity": ssrOpacity, transform: `translateY(${ssrY}px)` } as React.CSSProperties)
             }
         >
             {children}
