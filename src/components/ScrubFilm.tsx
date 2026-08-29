@@ -2,31 +2,63 @@
 
 import { useEffect, useRef } from "react";
 import { useScroll, useMotionValueEvent, useMotionValue, MotionValue } from "framer-motion";
-import { useReducedMotionSafe } from "@/components/motion/ScrollReveal";
+import { useReducedMotionSafe, useMounted } from "@/components/motion/ScrollReveal";
 
 const FILM_SECONDS = 15.13;
 
+/**
+ * Whether this visitor should get the animated film at all. Serves a still
+ * poster (zero video bytes) for: prefers-reduced-motion, viewports under
+ * 900px (sidesteps iOS Safari's unreliable scripted `currentTime` seeking),
+ * Data Saver / slow effectiveType, and low deviceMemory.
+ *
+ * Returns false during SSR and the first client render so the server markup
+ * matches; eligibility is computed on the post-mount render instead. useMounted
+ * flips to true after mount and forces a re-render, so the value never depends
+ * on an effect calling setState (react-hooks/set-state-in-effect).
+ */
+function useFilmEligible(reduceMotion: boolean) {
+  const mounted = useMounted();
+  if (reduceMotion || !mounted) return false;
+
+  const nav = navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+    deviceMemory?: number;
+  };
+  const conn = nav.connection;
+
+  const viewportOk = window.innerWidth >= 900;
+  const connOk = !conn || (!conn.saveData && !["slow-2g", "2g", "3g"].includes(conn.effectiveType ?? ""));
+  const memOk = typeof nav.deviceMemory !== "number" || nav.deviceMemory > 2;
+
+  return viewportOk && connOk && memOk;
+}
+
 export default function ScrubFilm({ trackId = "top" }: { trackId?: string }) {
   const reduceMotion = useReducedMotionSafe();
+  const filmEligible = useFilmEligible(reduceMotion);
+  const filmActive = !reduceMotion && filmEligible;
   const fwdRef = useRef<HTMLVideoElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const posterRef = useRef<HTMLImageElement>(null);
 
   const progress = useMotionValue(0);
 
+  // Hide the poster once the video has data ready. Runs again when the film
+  // activates after mount (the video element is only mounted then).
   useEffect(() => {
     const fwdEl = fwdRef.current;
     if (!fwdEl) return;
-    
+
     const hidePoster = () => {
       if (posterRef.current) posterRef.current.style.opacity = "0";
     };
-    
+
     if (fwdEl.readyState >= 2) hidePoster();
     else fwdEl.addEventListener("loadeddata", hidePoster, { once: true });
-    
+
     return () => fwdEl.removeEventListener("loadeddata", hidePoster);
-  }, []);
+  }, [filmActive]);
 
   return (
     <div
@@ -43,7 +75,7 @@ export default function ScrubFilm({ trackId = "top" }: { trackId?: string }) {
         draggable={false}
       />
 
-      {!reduceMotion && (
+      {filmActive && (
         <>
           <video
             ref={fwdRef}
