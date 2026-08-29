@@ -62,9 +62,9 @@ export default function Home() {
             </Reveal>
 
             <WordReveal
-              text="Backend systems that hold at peak load — stateless auth, event-driven messaging, and dashboards that never flinch at 2,500 TPS."
-              className="text-2xl leading-[1.25] font-extrabold tracking-tight sm:text-4xl sm:leading-[1.2] md:text-[2.75rem] md:leading-[1.15]"
-              highlightClassName="text-white"
+              text="Backend systems that hold at peak load — robust KYC onboarding, stateless OAuth & JWT, and notification engines that never flinch at 2,500 TPS."
+              className="text-xl leading-relaxed font-light tracking-wide sm:text-2xl md:text-3xl text-neutral-400"
+              highlightClassName="text-white drop-shadow-sm"
             />
 
             <Reveal delay={0.1}>

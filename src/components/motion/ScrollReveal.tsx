@@ -369,7 +369,7 @@ function Word({
     range: [number, number];
     highlightClassName: string;
 }) {
-    const opacity = useTransform(progress, range, [0.15, 1]);
+    const opacity = useTransform(progress, range, [0.35, 1]);
     return (
         <span className="relative mt-[0.1em]">
             {/*
@@ -386,8 +386,9 @@ function Word({
                 className={cn("beat-fade", highlightClassName)}
                 style={{ "--beat-opacity": opacity } as MotionStyle}
             >
-                {children}{" "}
+                {children}
             </motion.span>
+            <span style={{ whiteSpace: "pre" }}> </span>
         </span>
     );
 }
@@ -509,8 +510,6 @@ export function ScrollBeat({
     const reduceMotion = useReducedMotionSafe();
     const mounted = useMounted();
 
-    // useTransform needs a monotonically increasing input array, and every stop
-    // must be within [0, 1] — see the note on inRange above.
     let stops: number[];
     let opacityStops: number[];
     let yStops: number[];
@@ -524,7 +523,6 @@ export function ScrollBeat({
         opacityStops = [0, 1];
         yStops = [y, 0];
     } else if (outRange) {
-        // Already in at progress 0; only leaves.
         stops = [outRange[0], outRange[1]];
         opacityStops = [1, 0];
         yStops = [0, -y];
@@ -537,14 +535,6 @@ export function ScrollBeat({
     const opacity = useTransform(progress, stops, opacityStops);
     const yv = useTransform(progress, stops, yStops);
 
-    /**
-     * An invisible block must not stay clickable, but pointer-events CANNOT be
-     * driven through a MotionValue in `style`. framer-motion binds every style
-     * MotionValue to a WAAPI animation, and interpolating a discrete keyword
-     * ("auto" -> "none") makes Element.animate() throw
-     * "Offsets must be monotonically non-decreasing", which takes the whole
-     * React tree down. So toggle a class from the value instead.
-     */
     const [interactive, setInteractive] = useState(true);
     useMotionValueEvent(opacity, "change", (o) => {
         const next = o >= 0.05;
@@ -552,15 +542,22 @@ export function ScrollBeat({
     });
 
     const bind = !reduceMotion && mounted;
+    
+    // Server / pre-hydration state: if it fades in on scroll, it should start hidden.
+    const ssrOpacity = inRange ? 0 : 1;
+    const ssrY = inRange ? y : 0;
+    
+    const isPointerEventsNone = bind ? !interactive : ssrOpacity === 0;
 
     return (
         <motion.div
-            className={cn(className, bind && "beat-fade", bind && !interactive && "pointer-events-none")}
+            className={cn(className, "beat-fade", isPointerEventsNone && "pointer-events-none")}
             data-beat={dataBeat}
-            // Faded, never aria-hidden or display:none — off-beat copy has to
-            // stay readable to screen readers and crawlers.
-            // opacity goes through --beat-opacity; see globals.css .beat-fade.
-            style={bind ? ({ y: yv, "--beat-opacity": opacity } as MotionStyle) : undefined}
+            style={
+                bind
+                    ? ({ y: yv, "--beat-opacity": opacity } as MotionStyle)
+                    : ({ "--beat-opacity": ssrOpacity, transform: `translateY(${ssrY}px)` } as any)
+            }
         >
             {children}
         </motion.div>

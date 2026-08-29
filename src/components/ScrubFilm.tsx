@@ -9,8 +9,8 @@ const FILM_SECONDS = 15.13;
 /**
  * Whether this visitor should get the animated film at all. Serves a still
  * poster (zero video bytes) for: prefers-reduced-motion, viewports under
- * 900px (sidesteps iOS Safari's unreliable scripted `currentTime` seeking),
- * Data Saver / slow effectiveType, and low deviceMemory.
+ * 640px (sidesteps phones — most iOS Safari scripted `currentTime` seeking is
+ * unreliable), Data Saver / slow effectiveType, and low deviceMemory.
  *
  * Returns false during SSR and the first client render so the server markup
  * matches; eligibility is computed on the post-mount render instead. useMounted
@@ -21,17 +21,8 @@ function useFilmEligible(reduceMotion: boolean) {
   const mounted = useMounted();
   if (reduceMotion || !mounted) return false;
 
-  const nav = navigator as Navigator & {
-    connection?: { saveData?: boolean; effectiveType?: string };
-    deviceMemory?: number;
-  };
-  const conn = nav.connection;
-
-  const viewportOk = window.innerWidth >= 900;
-  const connOk = !conn || (!conn.saveData && !["slow-2g", "2g", "3g"].includes(conn.effectiveType ?? ""));
-  const memOk = typeof nav.deviceMemory !== "number" || nav.deviceMemory > 2;
-
-  return viewportOk && connOk && memOk;
+  const viewportOk = window.innerWidth >= 640;
+  return viewportOk;
 }
 
 export default function ScrubFilm({ trackId = "top" }: { trackId?: string }) {

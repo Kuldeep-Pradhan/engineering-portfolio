@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { Zap, Users, TrendingDown, Server } from "lucide-react";
+import { Zap, Users, ShieldCheck, TrendingDown } from "lucide-react";
 import { animate, useInView } from "framer-motion";
 import { Stagger, StaggerItem, useReducedMotionSafe } from "@/components/motion/ScrollReveal";
 
@@ -54,34 +54,34 @@ export default function MetricsStrip() {
 
   const metrics = [
     {
-      value: "2,500+",
-      unit: "TPS",
-      label: "Peak Transaction Throughput",
-      subtext: "Microservices on GCP Kubernetes",
-      icon: Zap,
+      value: "5+",
+      unit: "Banks",
+      label: "Client & Merchant Onboarding",
+      subtext: "KYC validation, Auth & Notification partners",
+      icon: ShieldCheck,
       color: "#E8B54D",
-    },
-    {
-      value: "4+",
-      unit: "Years",
-      label: "Engineering Experience",
-      subtext: "High-scale MERN & Fintech Systems",
-      icon: Server,
-      color: "#4FD188",
     },
     {
       value: "300K+",
       unit: "Users",
-      label: "Active Users / Partner",
-      subtext: "Kotak, NSDL & CSC Merchant Portals",
+      label: "Onboarded per Partner",
+      subtext: "KYC state machines · Aadhaar / PAN",
       icon: Users,
       color: "#8fc0ff",
     },
     {
-      value: "~60%",
+      value: "18ms",
+      unit: "OTP",
+      label: "Stateless Verification",
+      subtext: "RFC 6238 HMAC · zero DB I/O",
+      icon: Zap,
+      color: "#4FD188",
+    },
+    {
+      value: "60%",
       unit: "Faster",
-      label: "Auth Latency Reduction",
-      subtext: "Stateless RFC 6238 HMAC Tokens",
+      label: "OTP Auth Latency",
+      subtext: "Stateless TOTP enables horizontal auto-scaling",
       icon: TrendingDown,
       color: "#4FD188",
     },
