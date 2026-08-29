@@ -131,7 +131,14 @@ export default function Hero() {
                   Three explicit lines so each can leave in its own direction.
                   Still one <h1> and one sentence, so nothing changes for SEO.
                 */}
-                <h1 className="film-type text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl md:text-7xl">
+                {/* overflow-x-clip: the three ScrollLines translate ±340px on
+                    exit and STAY there for the rest of the page (the scroll
+                    transform clamps at its last keyframe). Each line's own
+                    overflow-clip only clips its children, not its own box, so
+                    the h1 clips the sideways travel. clip (not hidden) leaves
+                    overflow-y visible for the load-in rise and never creates a
+                    scroll container. */}
+                <h1 className="film-type overflow-x-clip text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl md:text-7xl">
                   <ScrollLine
                     progress={scrollYProgress}
                     exitRange={[0.24, 0.34]}

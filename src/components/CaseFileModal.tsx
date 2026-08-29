@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { X, ExternalLink, CheckCircle2, AlertCircle, Layers, Cpu, ArrowRight } from "lucide-react";
 import { GithubIcon } from "@/components/Icons";
 import { ProjectCaseStudy } from "@/data/projects";
@@ -18,23 +18,65 @@ export default function CaseFileModal({
   onSelectProject,
   allProjects,
 }: CaseFileModalProps) {
+  const sheetRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      // ← / → navigate between case files (like the Prev/Next buttons).
+      if (project && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        const idx = allProjects.findIndex((p) => p.id === project.id);
+        if (e.key === "ArrowLeft" && idx > 0) onSelectProject(allProjects[idx - 1]);
+        if (e.key === "ArrowRight" && idx < allProjects.length - 1)
+          onSelectProject(allProjects[idx + 1]);
+        return;
+      }
+      // Tab focus trap — keep keyboard focus inside the dialog.
+      if (e.key === "Tab" && sheetRef.current) {
+        const focusables = Array.from(
+          sheetRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     if (project) {
+      // Capture the previous overflow so cleanup restores EXACTLY that value.
+      // Setting `overflow: "unset"` (as before) overrides the stylesheet's
+      // `body { overflow-x: hidden }` in the cascade — inline beats stylesheet —
+      // which made the page horizontally scrollable after the first modal
+      // open/close. Restoring the captured value ("" when never set) leaves
+      // the stylesheet in charge again.
+      const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       // Pause Lenis so the page behind the modal stays put. The modal body
       // carries `data-lenis-prevent`, so it scrolls natively on its own.
       window.__lenis?.stop();
       window.addEventListener("keydown", handleKeyDown);
+      // Move focus into the dialog so the focus trap has a starting point
+      // (and screen readers announce it).
+      const raf = requestAnimationFrame(() => sheetRef.current?.focus());
+      return () => {
+        cancelAnimationFrame(raf);
+        document.body.style.overflow = prevOverflow;
+        window.__lenis?.start();
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     }
-    return () => {
-      document.body.style.overflow = "unset";
-      window.__lenis?.start();
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [project, onClose]);
+  }, [project, onClose, onSelectProject, allProjects]);
 
 
   if (!project) return null;
@@ -53,7 +95,14 @@ export default function CaseFileModal({
       />
 
       {/* Modal Dialog Sheet */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0E1015] border border-[#2D3139] rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200">
+      <div
+        ref={sheetRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Case file: ${project.title}`}
+        className="relative w-full max-w-4xl max-h-[90vh] bg-[#0E1015] border border-[#2D3139] rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200 focus:outline-none"
+      >
         {/* Top Header Bar */}
         <div className="px-6 py-4 bg-[#151820] border-b border-[#2D3139] flex items-center justify-between">
           <div className="flex items-center gap-3">
