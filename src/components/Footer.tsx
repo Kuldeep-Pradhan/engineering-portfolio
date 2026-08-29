@@ -99,7 +99,7 @@ export default function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs text-[#8E939F]">
           <p>© {new Date().getFullYear()} Kuldeep Pradhan. All rights reserved.</p>
           <p className="text-neutral-500">
-            Engineered with Next.js 15, TypeScript &amp; Tailwind CSS
+            Engineered with Next.js 16, TypeScript &amp; Tailwind CSS
           </p>
           <button
             onClick={scrollToTop}
