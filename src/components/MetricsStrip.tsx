@@ -1,8 +1,54 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import { Zap, Users, TrendingDown, Server } from "lucide-react";
-import { Stagger, StaggerItem } from "@/components/motion/ScrollReveal";
+import { animate, useInView } from "framer-motion";
+import { Stagger, StaggerItem, useReducedMotionSafe } from "@/components/motion/ScrollReveal";
+
+/** Split a metric string into "2,500+" -> { prefix:"", number:2500, suffix:"+" }. */
+function parseMetric(value: string) {
+  const m = value.match(/^([^0-9]*)([0-9][0-9,]*)(.*)$/);
+  if (!m) return { prefix: "", number: 0, suffix: value };
+  return { prefix: m[1], number: parseInt(m[2].replace(/,/g, ""), 10), suffix: m[3] };
+}
+
+/**
+ * Animated metric number. Counts 0 -> target once when the strip scrolls into
+ * view. Reduced-motion visitors get the static value with no animation.
+ */
+function MetricValue({ value, delay }: { value: string; delay: number }) {
+  const reduceMotion = useReducedMotionSafe();
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const parsed = useMemo(() => parseMetric(value), [value]);
+  const [n, setN] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (reduceMotion || !inView || started.current) return;
+    started.current = true;
+    const controls = animate(0, parsed.number, {
+      duration: 1.3,
+      delay,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (v) => setN(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [inView, reduceMotion, parsed, value, delay]);
+
+  const display = reduceMotion
+    ? value
+    : `${parsed.prefix}${n.toLocaleString("en-US")}${parsed.suffix}`;
+
+  return (
+    <span
+      ref={ref}
+      className="text-3xl sm:text-4xl font-extrabold font-mono text-white tracking-tight tabular-nums"
+    >
+      {display}
+    </span>
+  );
+}
 
 export default function MetricsStrip() {
 
@@ -65,9 +111,7 @@ export default function MetricsStrip() {
                 </div>
 
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-3xl sm:text-4xl font-extrabold font-mono text-white tracking-tight">
-                    {m.value}
-                  </span>
+                  <MetricValue value={m.value} delay={idx * 0.12} />
                   <span className="font-mono text-sm font-semibold text-[#E8B54D]">
                     {m.unit}
                   </span>
