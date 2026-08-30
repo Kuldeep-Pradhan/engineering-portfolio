@@ -37,7 +37,7 @@ const services: { icon: LucideIcon; name: string; sub: string; gold?: boolean }[
   { icon: ShieldCheck, name: "Auth & TOTP", sub: "Stateless HMAC · 18ms", gold: true },
   { icon: Layers, name: "KYC State Machine", sub: "Aadhaar · PAN · Biometric" },
   { icon: Bell, name: "Notification Engine", sub: "Novu · GCP Pub/Sub" },
-  { icon: KeyRound, name: "OAuth & JWT Auth", sub: "Central identity provider" },
+  { icon: KeyRound, name: "OAuth & JWT Auth", sub: "B2B2C API Infrastructure" },
 ];
 
 const dataTier: { icon: LucideIcon; name: string; sub: string }[] = [
@@ -225,3 +225,4 @@ export default function SystemArchitecture() {
     </section>
   );
 }
+

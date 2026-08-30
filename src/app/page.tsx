@@ -44,6 +44,23 @@ export default function Home() {
         {/* Compliance / reliability credentials */}
         <ComplianceBand />
 
+        {/* About Me Section */}
+        <section className="relative py-24 scroll-mt-24">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
+            <Reveal>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">
+                Bridging the Gap Between Scale and User Experience
+              </h2>
+              <p className="text-[#8E939F] leading-relaxed text-base sm:text-lg mb-8">
+                I am a full-stack engineer specializing in high-throughput Banking-as-a-Service (BaaS) platforms. My core expertise lies in building mission-critical distributed systems—from robust KYC onboarding engines used by Tier-1 national banks, to multi-tenant OTP and notification services that power secure transactions for top payment aggregators and thousands of merchants.
+              </p>
+              <div className="inline-flex items-center gap-2 font-mono text-xs text-[#E8B54D] uppercase tracking-wider bg-[#E8B54D]/10 px-4 py-2 rounded-full border border-[#E8B54D]/20">
+                <span className="font-bold">Currently Exploring:</span> LLM Applications, RAG Pipelines & AI Agents
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
         {/* SC.02: Production system topology */}
         <SystemArchitecture />
 

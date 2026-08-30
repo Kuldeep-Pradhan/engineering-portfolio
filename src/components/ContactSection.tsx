@@ -119,7 +119,7 @@ export default function ContactSection() {
               </h2>
 
               <p className="text-base sm:text-lg text-[#8E939F] mb-10 leading-relaxed max-w-md">
-                Open to high-impact full-time Senior Full Stack / Backend Engineering roles, fintech microservices consulting, or architectural advisory.
+                Open to high-impact full-time Full-Stack / Backend Engineering roles, fintech microservices consulting, or architectural advisory.
               </p>
 
               {/* Contact channel cards */}
@@ -283,3 +283,4 @@ export default function ContactSection() {
     </section>
   );
 }
+

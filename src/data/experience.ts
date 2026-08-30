@@ -26,7 +26,7 @@ export const experienceData: ExperienceItem[] = [
     achievements: [
       "Engineered high-concurrency Node.js/Express microservices on GCP Kubernetes handling 2,500+ TPS peak banking transaction volume.",
       "Built 2 greenfield React.js/TypeScript applications from scratch and scaled merchant dashboards serving 300K+ users per banking partner.",
-      "Architected end-to-end KYC verification state machines (Aadhaar, PAN, Biometric, Liveness) for major banking partners including Kotak, NSDL, and CSC.",
+      "Architected end-to-end KYC verification state machines (Aadhaar, PAN, Biometric, Liveness) for major banking partners including Tier-1 Sponsor Banks and National Service Networks.",
       "Designed high-availability RBI-compliant OTP/TOTP 2FA microservices; replaced Cassandra state-storage with stateless HMAC tokens to eliminate database I/O and cut latency by ~60%.",
       "Constructed a centralized Notification Dashboard integrating Novu SDK and GCP Pub/Sub for multi-channel SMS/Email/Push alerts, cutting template updates by ~40%.",
       "Developed hierarchical mATM device mapping REST APIs for banking correspondents, tracking 5,000+ active devices with Firebase real-time alerts.",
@@ -106,13 +106,7 @@ export const educationData = [
     period: "07/2016 – 10/2020",
     highlights: ["Information Systems", "Data Structures & Algorithms", "Database Management"],
   },
-  {
-    degree: "FDE Certification",
-    institution: "In Progress",
-    location: "Online",
-    period: "Currently Learning",
-    highlights: ["Awaiting Certificate Delivery"],
-  },
+  
   {
     degree: "React & Next.js Advanced Engineering",
     institution: "iServeu In-House Academy",
@@ -121,3 +115,5 @@ export const educationData = [
     highlights: ["Top Score in Cohort", "Server-Side Rendering & Next.js Architecture"],
   },
 ];
+
+

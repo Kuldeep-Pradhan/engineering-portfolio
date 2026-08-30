@@ -13,59 +13,40 @@ export interface SkillCategory {
 
 export const skillsData: SkillCategory[] = [
   {
-    id: "backend-frameworks",
-    category: "Backend & Distributed Systems",
+    id: "core-stack",
+    category: "Core Stack",
     code: "DOM.01",
-    description:
-      "High-throughput microservices, scalable REST & gRPC APIs, and event-driven architectures.",
+    description: "The primary technologies I use daily to build full-stack web applications and services.",
     skills: [
-      { name: "Node.js", level: "Expert", highlight: true, tag: "Core" },
-      { name: "TypeScript", level: "Expert", highlight: true, tag: "Core" },
-      { name: "Express.js", level: "Expert", highlight: true, tag: "Core" },
-      { name: "NestJS", level: "Advanced", highlight: true, tag: "Production" },
-      { name: "gRPC", level: "Advanced", tag: "Microservices" },
-      { name: "REST APIs", level: "Expert", tag: "Design" },
-      { name: "WebSockets / Socket.io", level: "Advanced", tag: "Real-time" },
-      { name: "Microservices Architecture", level: "Expert", highlight: true, tag: "Fintech" },
-      { name: "System Design", level: "Advanced", tag: "Architecture" },
+      { name: "Node.js", level: "Expert", highlight: true, tag: "Backend" },
+      { name: "TypeScript", level: "Expert", highlight: true, tag: "Language" },
+      { name: "React.js", level: "Expert", highlight: true, tag: "Frontend" },
+      { name: "Next.js", level: "Advanced", highlight: true, tag: "SSR/SSG" },
+      { name: "Express.js", level: "Expert", tag: "API" },
+      { name: "PostgreSQL", level: "Advanced", highlight: true, tag: "SQL" },
+      { name: "MongoDB", level: "Expert", tag: "NoSQL" },
+      { name: "Apache Cassandra", level: "Advanced", highlight: true, tag: "Wide-Column" }
     ],
   },
   {
-    id: "frontend-technologies",
-    category: "Frontend & Full Stack Engineering",
+    id: "backend-architecture",
+    category: "Backend & Architecture",
     code: "DOM.02",
-    description:
-      "High-performance, responsive web interfaces, complex financial dashboards, and server-rendered web applications.",
+    description: "Design patterns and systems enabling high-throughput and scalable distributed applications.",
     skills: [
-      { name: "React.js", level: "Expert", highlight: true, tag: "Batch Topper" },
-      { name: "Next.js (App Router)", level: "Advanced", highlight: true, tag: "SSR/SSG" },
-      { name: "Tailwind CSS", level: "Expert", tag: "Styling" },
-      { name: "Material UI", level: "Advanced", tag: "Design System" },
-      { name: "State Management (Redux/Zustand)", level: "Advanced", tag: "Client State" },
-      { name: "HTML5 / Modern ES6+ JS", level: "Expert", tag: "Foundation" },
-      { name: "Video.js", level: "Proficient", tag: "Media" },
-    ],
-  },
-  {
-    id: "databases-caching",
-    category: "Databases & Distributed Storage",
-    code: "DOM.03",
-    description:
-      "Relational, document, wide-column, and in-memory databases modeled for high concurrency and audit compliance.",
-    skills: [
-      { name: "PostgreSQL", level: "Advanced", highlight: true, tag: "ACID / Audit" },
-      { name: "MongoDB", level: "Expert", highlight: true, tag: "Session / Data" },
-      { name: "Apache Cassandra", level: "Advanced", tag: "Wide-Column" },
-      { name: "AWS DynamoDB", level: "Advanced", tag: "NoSQL Scale" },
-      { name: "Redis", level: "Advanced", highlight: true, tag: "Caching / Queue" },
+      { name: "Microservices", level: "Expert", highlight: true, tag: "Architecture" },
+      { name: "REST APIs", level: "Expert", tag: "Design" },
+      { name: "gRPC", level: "Advanced", tag: "RPC" },
+      { name: "Event-driven Systems", level: "Advanced", tag: "Design" },
+      { name: "Redis", level: "Advanced", highlight: true, tag: "Caching" },
+      { name: "WebSockets", level: "Advanced", tag: "Real-time" }
     ],
   },
   {
     id: "cloud-devops",
     category: "Cloud, Containers & CI/CD",
     code: "DOM.04",
-    description:
-      "Cloud-native deployments on Google Cloud Platform and AWS with Docker containerization and automated CI/CD pipelines.",
+    description: "Cloud-native deployments on Google Cloud Platform and AWS with Docker containerization and automated CI/CD pipelines.",
     skills: [
       { name: "Google Cloud Platform (GCP)", level: "Advanced", highlight: true, tag: "GKE / VM" },
       { name: "GCP Pub/Sub", level: "Advanced", highlight: true, tag: "Messaging" },
@@ -82,8 +63,7 @@ export const skillsData: SkillCategory[] = [
     id: "security-testing",
     category: "Security, Auth & Quality Assurance",
     code: "DOM.05",
-    description:
-      "RBI-compliant authentication, cryptographic token generation, and comprehensive automated test suites.",
+    description: "RBI-compliant authentication, cryptographic token generation, and comprehensive automated test suites.",
     skills: [
       { name: "RFC 6238 TOTP / OTP 2FA", level: "Expert", highlight: true, tag: "Security" },
       { name: "HMAC-SHA256 Stateless Auth", level: "Expert", highlight: true, tag: "Crypto" },
@@ -93,5 +73,5 @@ export const skillsData: SkillCategory[] = [
       { name: "Jest & Jest-Cucumber (BDD)", level: "Advanced", highlight: true, tag: "Testing" },
       { name: "n8n Automation", level: "Advanced", tag: "Productivity" },
     ],
-  },
+  }
 ];

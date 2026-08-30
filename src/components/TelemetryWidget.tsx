@@ -23,7 +23,7 @@ const initialLogs: LogEntry[] = [
     id: "2",
     timestamp: "15:42:01.428",
     level: "KYC",
-    message: "State machine transition NSDL partner -> Verified",
+    message: "State machine transition Tier-1 Partner -> Verified",
     status: "success",
   },
   {
@@ -57,7 +57,7 @@ const mockEventPool: Omit<LogEntry, "id" | "timestamp">[] = [
   },
   {
     level: "KYC",
-    message: "State machine transition NSDL partner -> Document biometric verified",
+    message: "State machine transition Tier-1 Partner -> Document biometric verified",
     status: "success",
   },
   {
@@ -77,7 +77,7 @@ const mockEventPool: Omit<LogEntry, "id" | "timestamp">[] = [
   },
   {
     level: "KYC",
-    message: "Kotak & NSDL onboarding state machine reached final settlement status",
+    message: "Tier-1 Sponsor Bank onboarding state machine reached final settlement status",
     status: "success",
   },
 ];
@@ -298,3 +298,4 @@ export default function TelemetryWidget() {
     </section>
   );
 }
+
