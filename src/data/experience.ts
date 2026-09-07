@@ -121,10 +121,10 @@ export const educationData = [
 export const hackerRankCertificates = [
   {
     id: "hr-59dcc70b3c98",
-    url: "https://www.hackerrank.com/certificates/iframe/59dcc70b3c98"
+    url: "/images/certs/59dcc70b3c98.png"
   },
   {
     id: "hr-6473fb773c9f",
-    url: "https://www.hackerrank.com/certificates/iframe/6473fb773c9f"
+    url: "/images/certs/6473fb773c9f.png"
   }
 ];

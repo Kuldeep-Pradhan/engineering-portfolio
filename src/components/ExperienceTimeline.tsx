@@ -173,18 +173,19 @@ export default function ExperienceTimeline() {
         </div>
 
         {/* HackerRank Certifications */}
-        <div className="mt-16 pt-12 border-t border-[#2D3139]/60">
+        <div className="mt-12">
           <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="flex items-center gap-2 mb-6 font-mono text-xs text-[#E8B54D] uppercase tracking-wider"
+            className="flex items-center gap-3 mb-8"
           >
-            <Code2 className="w-4 h-4" />
-            PROFESSIONAL CERTIFICATIONS
+            <div className="w-12 h-12 rounded bg-white flex items-center justify-center p-1.5 shadow-[0_0_15px_rgba(0,234,100,0.2)]">
+              <img src="/images/hackerrank-logo.png" alt="HackerRank" className="w-full h-full object-contain" />
+            </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hackerRankCertificates.map((cert, idx) => (
               <motion.div
                 key={cert.id}
@@ -193,20 +194,25 @@ export default function ExperienceTimeline() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
                 whileHover={{ y: -5 }}
-                className="relative rounded-2xl glass-card border border-white/5 overflow-hidden group shadow-lg"
+                className="relative rounded-2xl glass-card border border-white/10 overflow-hidden group shadow-lg p-4 sm:p-5 flex flex-col items-center justify-center bg-[#0a0a0a]/50"
               >
                 {/* Glowing subtle background on hover */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#E8B54D]/0 via-transparent to-[#E8B54D]/0 group-hover:from-[#E8B54D]/5 group-hover:to-transparent transition-all duration-500 z-0 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#00EA64]/0 via-transparent to-[#00EA64]/0 group-hover:from-[#00EA64]/5 group-hover:to-transparent transition-all duration-500 z-0 pointer-events-none" />
                 
-                {/* Embedded Certificate */}
-                <div className="relative z-10 w-full pt-[75%] sm:pt-[70%]">
-                  <iframe 
+                {/* Embedded Certificate Image (Clickable, no overlay) */}
+                <a 
+                  href={cert.url.replace('.png', '').replace('/images/certs/', 'https://www.hackerrank.com/certificates/iframe/')} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="relative z-10 w-full rounded-xl overflow-hidden border border-white/10 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] cursor-pointer block"
+                >
+                  <img 
                     src={cert.url} 
-                    title={cert.id}
-                    className="absolute top-0 left-0 w-full h-full border-none rounded-t-2xl sm:rounded-2xl"
+                    alt="HackerRank Certificate"
+                    className="w-full h-auto object-cover"
                     loading="lazy"
                   />
-                </div>
+                </a>
               </motion.div>
             ))}
           </div>
