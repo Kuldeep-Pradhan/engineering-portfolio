@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { experienceData, educationData } from "@/data/experience";
-import { Briefcase, Award, GraduationCap, MapPin, Calendar, CheckCircle2 } from "lucide-react";
+import { experienceData, educationData, hackerRankCertificates } from "@/data/experience";
+import { Briefcase, Award, GraduationCap, MapPin, Calendar, CheckCircle2, Code2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ExperienceTimeline() {
@@ -171,6 +171,47 @@ export default function ExperienceTimeline() {
             ))}
           </div>
         </div>
+
+        {/* HackerRank Certifications */}
+        <div className="mt-16 pt-12 border-t border-[#2D3139]/60">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-2 mb-6 font-mono text-xs text-[#E8B54D] uppercase tracking-wider"
+          >
+            <Code2 className="w-4 h-4" />
+            PROFESSIONAL CERTIFICATIONS
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            {hackerRankCertificates.map((cert, idx) => (
+              <motion.div
+                key={cert.id}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: idx * 0.15 }}
+                whileHover={{ y: -5 }}
+                className="relative rounded-2xl glass-card border border-white/5 overflow-hidden group shadow-lg"
+              >
+                {/* Glowing subtle background on hover */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#E8B54D]/0 via-transparent to-[#E8B54D]/0 group-hover:from-[#E8B54D]/5 group-hover:to-transparent transition-all duration-500 z-0 pointer-events-none" />
+                
+                {/* Embedded Certificate */}
+                <div className="relative z-10 w-full pt-[75%] sm:pt-[70%]">
+                  <iframe 
+                    src={cert.url} 
+                    title={cert.id}
+                    className="absolute top-0 left-0 w-full h-full border-none rounded-t-2xl sm:rounded-2xl"
+                    loading="lazy"
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </section>
   );
